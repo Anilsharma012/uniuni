@@ -66,7 +66,7 @@ router.post('/create-order', authOptional, async (req, res) => {
 // Verify Razorpay payment and create order
 router.post('/verify', requireAuth, async (req, res) => {
   try {
-    const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body || {};
+    const { razorpayOrderId, razorpayPaymentId, razorpaySignature, items, appliedCoupon, total, name, phone, address, city, state, pincode } = req.body || {};
 
     if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
       return res.status(400).json({
@@ -99,8 +99,103 @@ router.post('/verify', requireAuth, async (req, res) => {
       });
     }
 
-    // Payment verified, now we need to get the order details from the session
-    // For now, we'll return success and the frontend should handle creating the actual order
+    // If order details provided, create the order
+    if (items && Array.isArray(items) && items.length > 0) {
+      if (!city || !state || !pincode) {
+        return res.status(400).json({
+          ok: false,
+          message: 'City, state, and pincode are required',
+        });
+      }
+
+      const pinOk = /^\d{4,8}$/.test(String(pincode));
+      if (!pinOk) {
+        return res.status(400).json({
+          ok: false,
+          message: 'Invalid pincode',
+        });
+      }
+
+      // Decrement inventory for each item
+      for (const item of items) {
+        if (item.id || item.productId) {
+          const productId = item.id || item.productId;
+          const product = await Product.findById(productId);
+          if (product) {
+            if (product.trackInventoryBySize && item.size && Array.isArray(product.sizeInventory)) {
+              const sizeIdx = product.sizeInventory.findIndex(s => s.code === item.size);
+              if (sizeIdx !== -1) {
+                const currentQty = product.sizeInventory[sizeIdx].qty;
+                const requestedQty = Number(item.qty || 1);
+
+                if (currentQty < requestedQty) {
+                  return res.status(409).json({
+                    ok: false,
+                    message: `Insufficient stock for ${product.title} size ${item.size}`,
+                    itemId: item.id || item.productId,
+                    availableQty: currentQty,
+                  });
+                }
+
+                product.sizeInventory[sizeIdx].qty -= requestedQty;
+                await product.save();
+              }
+            } else if (!product.trackInventoryBySize) {
+              const currentStock = product.stock || 0;
+              const requestedQty = Number(item.qty || 1);
+              if (currentStock < requestedQty) {
+                return res.status(409).json({
+                  ok: false,
+                  message: `Insufficient stock for ${product.title}`,
+                  itemId: item.id || item.productId,
+                  availableQty: currentStock,
+                });
+              }
+              product.stock -= requestedQty;
+              await product.save();
+            }
+          }
+        }
+      }
+
+      // Create order with paid status
+      const order = new Order({
+        userId: req.user._id,
+        name: name || req.user.name,
+        phone: phone || req.user.phone,
+        address: address || req.user.address1,
+        city: city || req.user.city,
+        state: state || req.user.state,
+        pincode: pincode || req.user.pincode,
+        paymentMethod: 'Razorpay',
+        items,
+        total: total || 0,
+        status: 'paid',
+      });
+
+      await order.save();
+
+      // Send confirmation email
+      const User = require('../models/User');
+      const user = await User.findById(req.user._id);
+      if (user && user.email) {
+        await sendOrderConfirmationEmail(order, user).catch(err => {
+          console.error('Failed to send confirmation email:', err);
+        });
+      }
+
+      return res.json({
+        ok: true,
+        message: 'Payment verified successfully',
+        data: {
+          order,
+          razorpayPaymentId,
+          razorpayOrderId,
+        },
+      });
+    }
+
+    // If no order details, just verify the payment
     return res.json({
       ok: true,
       message: 'Payment verified successfully',
