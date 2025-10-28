@@ -18,6 +18,7 @@ const supportRoutes = require('./routes/support');
 const invoicesRoutes = require('./routes/invoices');
 const inquiryRoutes = require('./routes/inquiry');
 const couponsRoutes = require('./routes/coupons');
+const paymentRoutes = require('./routes/payment');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
