@@ -179,6 +179,11 @@ const CheckoutPayment = () => {
         order_id: orderId,
         handler: async (response: any) => {
           try {
+            // Validate customer details
+            if (!customerDetails.name || !customerDetails.phone || !customerDetails.address || !customerDetails.city || !customerDetails.state || !customerDetails.pincode) {
+              throw new Error('Please fill in all customer details');
+            }
+
             const verifyResponse = await fetch('/api/payment/verify', {
               method: 'POST',
               headers: {
@@ -190,6 +195,15 @@ const CheckoutPayment = () => {
                 razorpayOrderId: response.razorpay_order_id,
                 razorpayPaymentId: response.razorpay_payment_id,
                 razorpaySignature: response.razorpay_signature,
+                items: items.map(i => ({ id: i.id, title: i.title, price: i.price, qty: i.qty, image: i.image, size: i.meta?.size, productId: i.id })),
+                appliedCoupon,
+                total,
+                name: customerDetails.name,
+                phone: customerDetails.phone,
+                address: customerDetails.address,
+                city: customerDetails.city,
+                state: customerDetails.state,
+                pincode: customerDetails.pincode,
               }),
             });
 
