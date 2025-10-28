@@ -208,7 +208,15 @@ export default function AdminReturns() {
             </div>
             <div>
               <Label>HTML Content</Label>
-              <textarea className="w-full h-40 border rounded p-2 text-sm" value={emailHtml} onChange={(e)=>setEmailHtml(e.target.value)} />
+              <textarea
+                className="w-full h-40 rounded-md border bg-slate-50 dark:bg-slate-900/40 p-3 text-sm shadow-sm
+             focus-visible:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50
+             placeholder:text-muted-foreground"
+                placeholder="Write HTML here..."
+                value={emailHtml}
+                onChange={(e) => setEmailHtml(e.target.value)}
+              />
+
             </div>
             <div className="flex gap-2">
               <Button onClick={sendEmail} disabled={emailSending}>{emailSending ? 'Sending…' : 'Send'}</Button>
