@@ -362,8 +362,76 @@ const CheckoutPayment = () => {
         </h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Payment Options */}
+          {/* Delivery & Payment Options */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Delivery Details */}
+            <Card className="p-6 rounded-xl shadow-sm border border-gray-200">
+              <h2 className="text-lg font-semibold mb-4">Delivery Details</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="name">Full Name *</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Your full name"
+                    value={customerDetails.name}
+                    onChange={(e) => setCustomerDetails({ ...customerDetails, name: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phone">Phone Number *</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="10-digit mobile number"
+                    value={customerDetails.phone}
+                    onChange={(e) => setCustomerDetails({ ...customerDetails, phone: e.target.value })}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Label htmlFor="address">Street Address *</Label>
+                  <Input
+                    id="address"
+                    type="text"
+                    placeholder="House number, street name"
+                    value={customerDetails.address}
+                    onChange={(e) => setCustomerDetails({ ...customerDetails, address: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="city">City *</Label>
+                  <Input
+                    id="city"
+                    type="text"
+                    placeholder="City"
+                    value={customerDetails.city}
+                    onChange={(e) => setCustomerDetails({ ...customerDetails, city: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="state">State *</Label>
+                  <Input
+                    id="state"
+                    type="text"
+                    placeholder="State"
+                    value={customerDetails.state}
+                    onChange={(e) => setCustomerDetails({ ...customerDetails, state: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="pincode">Pincode *</Label>
+                  <Input
+                    id="pincode"
+                    type="text"
+                    placeholder="6-8 digit pincode"
+                    value={customerDetails.pincode}
+                    onChange={(e) => setCustomerDetails({ ...customerDetails, pincode: e.target.value })}
+                  />
+                </div>
+              </div>
+            </Card>
+
+            {/* Payment Options */}
             {/* Razorpay Option */}
             <Card className={`p-6 rounded-xl shadow-sm border ${razorpaySettings?.isActive ? 'border-gray-200' : 'border-gray-200 opacity-60'}`}>
               <div className="flex items-center gap-4 mb-6">
