@@ -267,6 +267,16 @@ const CheckoutPayment = () => {
       return;
     }
 
+    // Validate customer details
+    if (!customerDetails.name || !customerDetails.phone || !customerDetails.address || !customerDetails.city || !customerDetails.state || !customerDetails.pincode) {
+      toast({
+        title: 'Missing Details',
+        description: 'Please fill in all delivery details',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
       setSubmitting(true);
 
@@ -281,8 +291,14 @@ const CheckoutPayment = () => {
           transactionId: upiTransactionId.trim(),
           amount: total,
           paymentMethod: 'UPI',
-          items,
+          items: items.map(i => ({ id: i.id, title: i.title, price: i.price, qty: i.qty, image: i.image, size: i.meta?.size, productId: i.id })),
           appliedCoupon,
+          name: customerDetails.name,
+          phone: customerDetails.phone,
+          address: customerDetails.address,
+          city: customerDetails.city,
+          state: customerDetails.state,
+          pincode: customerDetails.pincode,
         }),
       });
 
