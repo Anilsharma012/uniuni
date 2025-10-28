@@ -37,6 +37,16 @@ const CheckoutPayment = () => {
   const [submitting, setSubmitting] = useState(false);
   const [copiedUpiId, setCopiedUpiId] = useState(false);
 
+  // Customer details
+  const [customerDetails, setCustomerDetails] = useState({
+    name: localStorage.getItem('userName') || '',
+    phone: localStorage.getItem('userPhone') || '',
+    address: localStorage.getItem('userAddress') || '',
+    city: localStorage.getItem('userCity') || '',
+    state: localStorage.getItem('userState') || '',
+    pincode: localStorage.getItem('userPincode') || '',
+  });
+
   const buildUpiUri = (scheme?: string) => {
     const pa = encodeURIComponent(paymentSettings?.upiId || '');
     if (!pa) return '';
