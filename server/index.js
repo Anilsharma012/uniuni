@@ -86,6 +86,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/inquiry', inquiryRoutes);
 app.use('/api/coupons', couponsRoutes);
+app.use('/api/payment', paymentRoutes);
 
 async function start() {
   const uri = process.env.MONGODB_URI;
