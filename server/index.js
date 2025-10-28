@@ -18,6 +18,7 @@ const supportRoutes = require('./routes/support');
 const invoicesRoutes = require('./routes/invoices');
 const inquiryRoutes = require('./routes/inquiry');
 const couponsRoutes = require('./routes/coupons');
+const paymentRoutes = require('./routes/payment');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -85,6 +86,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/inquiry', inquiryRoutes);
 app.use('/api/coupons', couponsRoutes);
+app.use('/api/payment', paymentRoutes);
 
 async function start() {
   const uri = process.env.MONGODB_URI;
