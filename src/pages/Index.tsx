@@ -531,14 +531,14 @@ const Index = () => {
       </section>
 
       {/* Categories grid with product showcase */}
-      <section className="container mx-auto px-4 pb-24">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-5xl font-black tracking-tighter mb-4">
+      <section className="container mx-auto px-3 sm:px-4 pb-12 sm:pb-24">
+        <div className="text-center mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tighter mb-2 sm:mb-4">
             Shop by <span className="text-primary">Category</span>
           </h2>
         </div>
         {catsLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="aspect-square rounded-lg bg-muted/40 animate-pulse" />
             ))}
@@ -546,7 +546,7 @@ const Index = () => {
         ) : catsError ? (
           <div className="text-center text-sm text-muted-foreground mb-12">{catsError}</div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12">
             {topCats.map((c) => {
               const catId = c.slug || c.name || '';
               const prod = categoryProducts.get(catId);
@@ -554,12 +554,12 @@ const Index = () => {
               return prod ? (
                 <ProductCard key={String(c._id || c.id || c.slug || c.name)} {...mapToCard(prod)} to={to} />
               ) : (
-                <Link key={String(c._id || c.id || c.slug || c.name)} to={to} className="group block rounded-lg border border-border bg-card p-4 hover:border-primary/50 transition-colors aspect-square flex items-center justify-center">
+                <Link key={String(c._id || c.id || c.slug || c.name)} to={to} className="group block rounded-lg border border-border bg-card p-3 sm:p-4 hover:border-primary/50 transition-colors aspect-square flex items-center justify-center">
                   <div className="text-center">
-                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-xl font-bold mb-3 mx-auto">
+                    <div className="h-12 sm:h-16 w-12 sm:w-16 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-lg sm:text-xl font-bold mb-2 sm:mb-3 mx-auto">
                       {(c.name || '').slice(0, 1)}
                     </div>
-                    <div className="font-medium group-hover:text-primary">{c.name}</div>
+                    <div className="text-xs sm:text-sm font-medium group-hover:text-primary line-clamp-2">{c.name}</div>
                   </div>
                 </Link>
               );
@@ -567,13 +567,13 @@ const Index = () => {
           </div>
         )}
 
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl md:text-2xl font-bold tracking-tight">From these categories</h3>
-          <div className="text-sm text-muted-foreground">Swipe to explore</div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 mb-4">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight">From these categories</h3>
+          <div className="text-xs sm:text-sm text-muted-foreground">Swipe to explore</div>
         </div>
 
         {mixedLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="aspect-square rounded-lg bg-muted/40 animate-pulse" />
             ))}
@@ -582,13 +582,13 @@ const Index = () => {
           <div className="text-center text-sm text-muted-foreground">{mixedError}</div>
         ) : (
           <Carousel opts={{ align: "start", loop: true }}>
-            <CarouselContent className="-ml-2 md:-ml-4">
+            <CarouselContent className="-ml-1 sm:-ml-2 md:-ml-4">
               {mixedProducts.map((p) => {
                 const card = mapToCard(p);
                 const slug = catSlugForProduct(p);
                 const to = `/collection/${slug}`;
                 return (
-                  <CarouselItem key={String(p._id || p.id)} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4">
+                  <CarouselItem key={String(p._id || p.id)} className="pl-1 sm:pl-2 md:pl-4 basis-1/1.5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
                     <ProductCard {...card} to={to} />
                   </CarouselItem>
                 );
