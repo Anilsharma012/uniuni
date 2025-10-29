@@ -856,6 +856,66 @@ const Admin = () => {
     }
   };
 
+  const fetchBillingInfo = async () => {
+    try {
+      setBillingLoading(true);
+      const data = await apiFetch<BillingInfoForm>(`/api/admin/billing-info?v=${Date.now()}`);
+      if (data) {
+        setBillingForm({
+          companyName: String(data.companyName || 'UNI10'),
+          address: String(data.address || ''),
+          contactNumber: String(data.contactNumber || ''),
+          email: String(data.email || ''),
+          gstinNumber: String(data.gstinNumber || ''),
+        });
+      }
+    } catch (e:any) {
+      console.warn('Failed to load billing info', e?.message || e);
+    } finally {
+      setBillingLoading(false);
+    }
+  };
+
+  const saveBillingInfo = async () => {
+    try {
+      setBillingSaving(true);
+      if (!billingForm.companyName.trim()) {
+        toast.error('Company name is required');
+        return;
+      }
+      if (!billingForm.address.trim()) {
+        toast.error('Address is required');
+        return;
+      }
+      if (!billingForm.contactNumber.trim()) {
+        toast.error('Contact number is required');
+        return;
+      }
+      if (!billingForm.email.trim()) {
+        toast.error('Email is required');
+        return;
+      }
+      if (!billingForm.gstinNumber.trim()) {
+        toast.error('GSTIN number is required');
+        return;
+      }
+      const payload = {
+        companyName: billingForm.companyName.trim(),
+        address: billingForm.address.trim(),
+        contactNumber: billingForm.contactNumber.trim(),
+        email: billingForm.email.trim(),
+        gstinNumber: billingForm.gstinNumber.trim(),
+      };
+      await apiFetch<any>(`/api/admin/billing-info`, { method: 'POST', body: JSON.stringify(payload) });
+      toast.success('Company billing details saved');
+      await fetchBillingInfo();
+    } catch (e:any) {
+      toast.error(e?.message || 'Failed to save billing info');
+    } finally {
+      setBillingSaving(false);
+    }
+  };
+
   const fetchCategories = async () => {
     try {
       // Try public categories endpoint with cache-bust
