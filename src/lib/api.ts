@@ -1,4 +1,23 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+let API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+// If API_BASE is not configured at build time, detect preview environments (Builder/preview) and
+// default to same-origin '/api' for live previews. Otherwise fallback to localhost backend.
+try {
+  if (!API_BASE && typeof window !== 'undefined') {
+    const hostname = window.location.hostname || '';
+    const isBuilderPreview = hostname.includes('builder') || hostname.includes('preview') || hostname.includes('builder.codes') || hostname.includes('builder.my') || hostname.includes('builder.io');
+    if (isBuilderPreview) {
+      // Use same origin api for previews (HTTPS in Builder previews)
+      API_BASE = `${window.location.protocol}//${window.location.host}/api`;
+    } else {
+      // Default local backend
+      API_BASE = 'http://localhost:5000/api';
+    }
+  }
+} catch (e) {
+  // ignore
+}
+
+export { API_BASE };
 
 function isLocalhost(url: string) {
   try {
