@@ -9,6 +9,8 @@ import { useCart } from "@/contexts/CartContext";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { CheckoutModal } from "@/components/CheckoutModal";
+import { Menu, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Types for orders and items
 type OrderItem = { id: string; title: string; price: number; qty: number; image?: string };
@@ -67,6 +69,7 @@ export default function Dashboard() {
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const [openCheckout, setOpenCheckout] = useState(false);
   const [activeTab, setActiveTab] = useState<"orders" | "returns" | "cart" | "wishlist">("orders");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Protect route
   useEffect(() => {
@@ -204,36 +207,64 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6">
-          <aside className="lg:w-56 w-full">
-            <div className="bg-card border border-border rounded-lg p-3 sticky top-24">
+        {/* Mobile sidebar toggle */}
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="md:hidden mb-4 p-2 rounded-lg border border-border bg-card hover:bg-muted transition-colors flex items-center gap-2"
+        >
+          {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <span className="text-sm font-medium">
+            {isSidebarOpen ? 'Close' : 'Menu'}
+          </span>
+        </button>
+
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+          {/* Sidebar - collapsible on mobile */}
+          <aside
+            className={cn(
+              'transition-all duration-300 ease-in-out',
+              'w-full md:w-56',
+              isSidebarOpen ? 'block' : 'hidden md:block'
+            )}
+          >
+            <div className="bg-card border border-border rounded-lg p-3 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto">
               <div className="text-sm font-semibold text-muted-foreground mb-2">Dashboard</div>
               <div className="space-y-1">
                 <Link
                   to="/dashboard"
-                  className={`block px-3 py-2 rounded-md text-sm ${location.pathname === "/dashboard" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground hover:text-foreground"}`}
+                  onClick={() => setIsSidebarOpen(false)}
+                  className={`block px-3 py-2 rounded-md text-xs sm:text-sm ${location.pathname === "/dashboard" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground hover:text-foreground"}`}
                 >
                   Dashboard
                 </Link>
                 <button
-                  onClick={() => setActiveTab("orders")}
-                  className={`w-full text-left px-3 py-2 rounded-md text-sm ${
+                  onClick={() => {
+                    setActiveTab("orders");
+                    setIsSidebarOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-md text-xs sm:text-sm ${
                     activeTab === "orders" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   Orders
                 </button>
                 <button
-                  onClick={() => setActiveTab("wishlist")}
-                  className={`w-full text-left px-3 py-2 rounded-md text-sm ${
+                  onClick={() => {
+                    setActiveTab("wishlist");
+                    setIsSidebarOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-md text-xs sm:text-sm ${
                     activeTab === "wishlist" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   Wishlist
                 </button>
                 <button
-                  onClick={() => setActiveTab("returns")}
-                  className={`w-full text-left px-3 py-2 rounded-md text-sm ${
+                  onClick={() => {
+                    setActiveTab("returns");
+                    setIsSidebarOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-md text-xs sm:text-sm ${
                     activeTab === "returns" ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -241,19 +272,22 @@ export default function Dashboard() {
                 </button>
                 <Link
                   to="/account/support"
-                  className={`block px-3 py-2 rounded-md text-sm ${location.pathname.startsWith("/account/support") ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground hover:text-foreground"}`}
+                  onClick={() => setIsSidebarOpen(false)}
+                  className={`block px-3 py-2 rounded-md text-xs sm:text-sm ${location.pathname.startsWith("/account/support") ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground hover:text-foreground"}`}
                 >
                   Support
                 </Link>
                 <Link
                   to="/account/shipments"
-                  className={`block px-3 py-2 rounded-md text-sm ${location.pathname.startsWith("/account/shipments") ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground hover:text-foreground"}`}
+                  onClick={() => setIsSidebarOpen(false)}
+                  className={`block px-3 py-2 rounded-md text-xs sm:text-sm ${location.pathname.startsWith("/account/shipments") ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground hover:text-foreground"}`}
                 >
                   Shipments
                 </Link>
                 <Link
                   to="/account/profile"
-                  className={`block px-3 py-2 rounded-md text-sm ${location.pathname.startsWith("/account/profile") ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground hover:text-foreground"}`}
+                  onClick={() => setIsSidebarOpen(false)}
+                  className={`block px-3 py-2 rounded-md text-xs sm:text-sm ${location.pathname.startsWith("/account/profile") ? "bg-primary text-primary-foreground" : "hover:bg-muted text-muted-foreground hover:text-foreground"}`}
                 >
                   Profile
                 </Link>
@@ -266,8 +300,9 @@ export default function Dashboard() {
                     } catch {
                       navigate("/");
                     }
+                    setIsSidebarOpen(false);
                   }}
-                  className="w-full text-left px-3 py-2 rounded-md text-sm hover:bg-muted text-muted-foreground hover:text-foreground"
+                  className="w-full text-left px-3 py-2 rounded-md text-xs sm:text-sm hover:bg-muted text-muted-foreground hover:text-foreground"
                 >
                   Logout
                 </button>
@@ -275,12 +310,12 @@ export default function Dashboard() {
             </div>
           </aside>
 
-          <section className="flex-1 min-w-0 space-y-8">
+          <section className="flex-1 min-w-0 space-y-6 sm:space-y-8">
             {activeTab === "orders" && (
-              <section className="mb-12">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold">Your Orders</h2>
-                  <div className="flex items-center gap-2">
+              <section className="mb-8 sm:mb-12">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+                  <h2 className="text-lg sm:text-xl font-bold">Your Orders</h2>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
                     <button
                       className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
                       onClick={() => {
@@ -302,7 +337,7 @@ export default function Dashboard() {
                         setFilter(e.target.value as any);
                         setShowCount(10);
                       }}
-                      className="border border-border rounded px-2 py-1 text-sm bg-background"
+                      className="border border-border rounded px-2 py-1 text-xs sm:text-sm bg-background w-full sm:w-auto"
                     >
                       {statuses.map((s) => (
                         <option key={s} value={s}>

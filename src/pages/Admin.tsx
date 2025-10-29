@@ -34,6 +34,8 @@ import {
   Megaphone,
   Star,
   Percent,
+  Menu,
+  X,
 } from 'lucide-react';
 import {
   Dialog,
@@ -405,6 +407,7 @@ const Admin = () => {
   const navigate = useNavigate();
 
   const [activeSection, setActiveSection] = useState<Section>('overview');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersCurrentPage, setOrdersCurrentPage] = useState(1);
@@ -3545,13 +3548,31 @@ const handleProductSubmit = async (e: React.FormEvent) => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container mx-auto px-4 pt-24 pb-12">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <aside className="lg:w-64 w-full">
-            <div className="bg-card border border-border rounded-lg p-4 sticky top-24">
+      <main className="container mx-auto px-3 sm:px-4 pt-24 pb-12">
+        {/* Mobile sidebar toggle button */}
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="md:hidden mb-4 p-2 rounded-lg border border-border bg-card hover:bg-muted transition-colors flex items-center gap-2"
+        >
+          {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <span className="text-sm font-medium">
+            {isSidebarOpen ? 'Close' : 'Menu'}
+          </span>
+        </button>
+
+        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
+          {/* Sidebar - Hidden on mobile, shown with toggle or visible on md+ */}
+          <aside
+            className={cn(
+              'transition-all duration-300 ease-in-out',
+              'w-full md:w-64',
+              isSidebarOpen ? 'block' : 'hidden md:block'
+            )}
+          >
+            <div className="bg-card border border-border rounded-lg p-3 sm:p-4 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto">
               <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-                <LayoutDashboard className="h-4 w-4" />
-                Admin Navigation
+                <LayoutDashboard className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate">Admin Navigation</span>
               </div>
               <div className="mt-4 space-y-1">
                 {NAV_ITEMS.map((item) => {
@@ -3560,7 +3581,10 @@ const handleProductSubmit = async (e: React.FormEvent) => {
                   return (
                     <button
                       key={item.id}
-                      onClick={() => setActiveSection(item.id)}
+                      onClick={() => {
+                        setActiveSection(item.id);
+                        setIsSidebarOpen(false);
+                      }}
                       className={cn(
                         'w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                         isActive
@@ -3568,10 +3592,10 @@ const handleProductSubmit = async (e: React.FormEvent) => {
                           : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                       )}
                     >
-                      <Icon className="h-4 w-4" />
+                      <Icon className="h-4 w-4 flex-shrink-0" />
                       <span className="truncate">{item.label}</span>
                       {item.id === 'orders' && pendingOrdersCount > 0 && (
-                        <Badge variant={isActive ? 'secondary' : 'outline'} className="ml-auto">
+                        <Badge variant={isActive ? 'secondary' : 'outline'} className="ml-auto text-xs">
                           {pendingOrdersCount > 99 ? '99+' : pendingOrdersCount}
                         </Badge>
                       )}
@@ -3582,7 +3606,7 @@ const handleProductSubmit = async (e: React.FormEvent) => {
             </div>
           </aside>
 
-          <section className="flex-1 min-w-0 space-y-6">
+          <section className="flex-1 min-w-0 space-y-4 sm:space-y-6">
             {renderContent()}
           </section>
         </div>

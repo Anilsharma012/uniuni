@@ -256,13 +256,13 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container mx-auto px-4 pt-24 pb-12">
-        <Link to="/shop" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8">
-          <ArrowLeft className="h-4 w-4 mr-2" />
+      <main className="container mx-auto px-3 sm:px-4 pt-24 pb-12">
+        <Link to="/shop" className="inline-flex items-center text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-6 sm:mb-8">
+          <ArrowLeft className="h-4 w-4 mr-2 flex-shrink-0" />
           Back to Shop
         </Link>
 
-        <div className="grid md:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
           <div className="aspect-square bg-secondary rounded-lg overflow-hidden">
             <img
               src={img}
@@ -282,13 +282,13 @@ const ProductDetail = () => {
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground uppercase tracking-wider mb-2">{product.category}</p>
-            <h1 className="text-4xl font-black tracking-tighter mb-4">{title}</h1>
-            <p className="text-3xl font-bold mb-6">₹{Number(product.price || 0).toLocaleString('en-IN')}</p>
-            <div className="mb-4">
-              <Badge variant={outOfStock ? 'destructive' : 'secondary'}>{outOfStock ? 'Not Available' : 'Available'}</Badge>
+            <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">{product.category}</p>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tighter mb-2 sm:mb-4">{title}</h1>
+            <p className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">₹{Number(product.price || 0).toLocaleString('en-IN')}</p>
+            <div className="mb-3 sm:mb-4">
+              <Badge variant={outOfStock ? 'destructive' : 'secondary'} className="text-xs sm:text-sm">{outOfStock ? 'Not Available' : 'Available'}</Badge>
             </div>
-            <p className="text-muted-foreground mb-8">{product.description}</p>
+            <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-6 sm:mb-8">{product.description}</p>
 
             <AvailableCoupons
               onUseNow={(code) => {
@@ -298,16 +298,16 @@ const ProductDetail = () => {
 
             {/* Per-size inventory display */}
             {product?.trackInventoryBySize && Array.isArray(product?.sizeInventory) && product.sizeInventory.length > 0 && (
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <label className="block text-sm font-semibold">Size</label>
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between mb-2 sm:mb-3 gap-2">
+                  <label className="block text-xs sm:text-sm font-semibold">Size</label>
                   {product.sizeChart ? (
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowSizeChartTable(true)}
-                      className="text-xs"
+                      className="text-xs h-auto p-1"
                     >
                       <Ruler className="h-3 w-3 mr-1" />
                       Size Chart
@@ -318,14 +318,14 @@ const ProductDetail = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowSizeChart(true)}
-                      className="text-xs"
+                      className="text-xs h-auto p-1"
                     >
                       <Ruler className="h-3 w-3 mr-1" />
                       Size Chart
                     </Button>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                   {product.sizeInventory.map((sizeItem) => {
                     const isOutOfStock = sizeItem.qty === 0;
                     const isLowStock = sizeItem.qty > 0 && sizeItem.qty <= 3;
@@ -339,7 +339,7 @@ const ProductDetail = () => {
                             setSizeStockError('');
                           }}
                           className={cn(
-                            'px-4 py-2 rounded border text-sm font-medium transition-colors',
+                            'px-3 sm:px-4 py-1.5 sm:py-2 rounded border text-xs sm:text-sm font-medium transition-colors',
                             isOutOfStock
                               ? 'opacity-50 cursor-not-allowed bg-muted border-border text-muted-foreground'
                               : selectedSize === sizeItem.code
@@ -371,16 +371,16 @@ const ProductDetail = () => {
 
             {/* Simple sizes (non-inventory tracked) */}
             {!product?.trackInventoryBySize && Array.isArray(product?.sizes) && product.sizes.length > 0 && (
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <label className="block text-sm font-semibold">Size</label>
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between mb-2 sm:mb-3 gap-2">
+                  <label className="block text-xs sm:text-sm font-semibold">Size</label>
                   {product.sizeChart ? (
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowSizeChartTable(true)}
-                      className="text-xs"
+                      className="text-xs h-auto p-1"
                     >
                       <Ruler className="h-3 w-3 mr-1" />
                       Size Chart
@@ -391,14 +391,14 @@ const ProductDetail = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowSizeChart(true)}
-                      className="text-xs"
+                      className="text-xs h-auto p-1"
                     >
                       <Ruler className="h-3 w-3 mr-1" />
                       Size Chart
                     </Button>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                   {product.sizes.map((sz) => (
                     <button
                       key={sz}
@@ -408,7 +408,7 @@ const ProductDetail = () => {
                         setSizeStockError('');
                       }}
                       className={cn(
-                        'px-3 py-1 rounded border',
+                        'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded border text-xs sm:text-sm',
                         selectedSize === sz ? 'bg-primary text-primary-foreground border-primary' : 'bg-transparent border-border',
                       )}
                     >
@@ -419,24 +419,24 @@ const ProductDetail = () => {
               </div>
             )}
 
-            <div className="mb-8">
-              <label className="block text-sm font-semibold mb-3">Quantity</label>
-              <div className="flex items-center gap-4">
-                <Button variant="outline" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</Button>
-                <span className="font-semibold min-w-[40px] text-center">{quantity}</span>
-                <Button variant="outline" size="icon" onClick={() => setQuantity(quantity + 1)}>+</Button>
+            <div className="mb-6 sm:mb-8">
+              <label className="block text-xs sm:text-sm font-semibold mb-2 sm:mb-3">Quantity</label>
+              <div className="flex items-center gap-3 sm:gap-4">
+                <Button variant="outline" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="h-9 w-9 sm:h-10 sm:w-10">-</Button>
+                <span className="font-semibold min-w-[40px] text-center text-sm sm:text-base">{quantity}</span>
+                <Button variant="outline" size="icon" onClick={() => setQuantity(quantity + 1)} className="h-9 w-9 sm:h-10 sm:w-10">+</Button>
               </div>
             </div>
 
  
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {outOfStock || (product?.trackInventoryBySize && !selectedSize) ? (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="w-full">
-                        <Button size="lg" className="w-full" disabled>
-                          <ShoppingCart className="mr-2 h-5 w-5" />
+                      <span className="w-full block">
+                        <Button size="lg" className="w-full text-xs sm:text-sm h-9 sm:h-11" disabled>
+                          <ShoppingCart className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                           Add to Cart
                         </Button>
                       </span>
@@ -447,13 +447,13 @@ const ProductDetail = () => {
                   </Tooltip>
                 </TooltipProvider>
               ) : (
-                <Button size="lg" className="w-full" onClick={handleAddToCart}>
-                  <ShoppingCart className="mr-2 h-5 w-5" />
+                <Button size="lg" className="w-full text-xs sm:text-sm h-9 sm:h-11" onClick={handleAddToCart}>
+                  <ShoppingCart className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Add to Cart
                 </Button>
               )}
               {!(outOfStock || (product?.trackInventoryBySize && !selectedSize)) && (
-                <Button size="lg" className="w-full" onClick={handleBuyNow}>
+                <Button size="lg" className="w-full text-xs sm:text-sm h-9 sm:h-11" onClick={handleBuyNow}>
                   Buy Now
                 </Button>
               )}
@@ -461,7 +461,7 @@ const ProductDetail = () => {
                 <Button
                   size="lg"
                   variant={isVerifiedBuyer ? 'secondary' : 'outline'}
-                  className="w-full"
+                  className="w-full text-xs sm:text-sm h-9 sm:h-11"
                   onClick={() => setShowReviewModal(true)}
                   disabled={!isVerifiedBuyer}
                 >
@@ -471,8 +471,8 @@ const ProductDetail = () => {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="w-full">
-                        <Button size="lg" variant="outline" className="w-full" disabled>
+                      <span className="w-full block">
+                        <Button size="lg" variant="outline" className="w-full text-xs sm:text-sm h-9 sm:h-11" disabled>
                           Write a Review
                         </Button>
                       </span>
@@ -487,18 +487,18 @@ const ProductDetail = () => {
 
             {/* Product Details Section */}
             {(product?.highlights?.length || product?.specs?.length || product?.longDescription) && (
-              <div id="details" className="mt-12 pt-8 border-t border-border">
-                <h2 className="text-2xl font-bold tracking-tighter mb-8">Product Details</h2>
+              <div id="details" className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-border">
+                <h2 className="text-xl sm:text-2xl font-bold tracking-tighter mb-6 sm:mb-8">Product Details</h2>
 
                 {/* Highlights Section */}
                 {product?.highlights && product.highlights.length > 0 && (
-                  <div id="highlights" className="mb-8">
-                    <h3 className="text-lg font-semibold mb-4">Highlights</h3>
-                    <ul className="space-y-2">
+                  <div id="highlights" className="mb-6 sm:mb-8">
+                    <h3 className="text-sm sm:text-base font-semibold mb-3 sm:mb-4">Highlights</h3>
+                    <ul className="space-y-1.5 sm:space-y-2">
                       {product.highlights.map((highlight, idx) => (
-                        <li key={idx} className="flex items-start gap-3">
-                          <span className="text-primary mt-1">•</span>
-                          <span className="text-foreground">{highlight}</span>
+                        <li key={idx} className="flex items-start gap-2 sm:gap-3">
+                          <span className="text-primary mt-0.5 flex-shrink-0">•</span>
+                          <span className="text-xs sm:text-sm text-foreground">{highlight}</span>
                         </li>
                       ))}
                     </ul>
@@ -507,15 +507,15 @@ const ProductDetail = () => {
 
                 {/* Specifications Section */}
                 {product?.specs && product.specs.length > 0 && (
-                  <div id="specs" className="mb-8">
-                    <h3 className="text-lg font-semibold mb-4">Specifications</h3>
+                  <div id="specs" className="mb-6 sm:mb-8">
+                    <h3 className="text-sm sm:text-base font-semibold mb-3 sm:mb-4">Specifications</h3>
                     <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
+                      <table className="w-full text-xs sm:text-sm">
                         <tbody>
                           {product.specs.map((spec, idx) => (
                             <tr key={idx} className={idx % 2 === 0 ? 'bg-muted/30' : ''}>
-                              <td className="px-4 py-3 font-medium text-foreground w-1/3 md:w-1/4">{spec.key}</td>
-                              <td className="px-4 py-3 text-muted-foreground">{spec.value}</td>
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 font-medium text-foreground w-1/3 md:w-1/4">{spec.key}</td>
+                              <td className="px-2 sm:px-4 py-2 sm:py-3 text-muted-foreground">{spec.value}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -526,9 +526,9 @@ const ProductDetail = () => {
 
                 {/* Description Section */}
                 {product?.longDescription && (
-                  <div id="description" className="mb-8">
-                    <h3 className="text-lg font-semibold mb-4">Description</h3>
-                    <div className="text-muted-foreground leading-relaxed space-y-2">
+                  <div id="description" className="mb-6 sm:mb-8">
+                    <h3 className="text-sm sm:text-base font-semibold mb-3 sm:mb-4">Description</h3>
+                    <div className="text-xs sm:text-sm text-muted-foreground leading-relaxed space-y-2">
                       {descriptionExpanded || (product.longDescription.length <= 250) ? (
                         <p className="whitespace-pre-wrap">{escapeHtml(product.longDescription)}</p>
                       ) : (
@@ -537,17 +537,17 @@ const ProductDetail = () => {
                       {product.longDescription.length > 250 && (
                         <button
                           onClick={() => setDescriptionExpanded(!descriptionExpanded)}
-                          className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium mt-4"
+                          className="inline-flex items-center gap-1 sm:gap-2 text-primary hover:text-primary/80 font-medium mt-3 sm:mt-4 text-xs sm:text-sm"
                         >
                           {descriptionExpanded ? (
                             <>
                               Read less
-                              <ChevronUp className="h-4 w-4" />
+                              <ChevronUp className="h-3 w-3 sm:h-4 sm:w-4" />
                             </>
                           ) : (
                             <>
                               Read more
-                              <ChevronDown className="h-4 w-4" />
+                              <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
                             </>
                           )}
                         </button>
