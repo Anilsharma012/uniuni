@@ -32,7 +32,7 @@ router.post('/create-order', authOptional, async (req, res) => {
   try {
     const { amount, currency, items, appliedCoupon } = req.body || {};
 
-    // Validate amount
+    // Validate amount (expect amount in rupees from frontend)
     const parsedAmount = parseFloat(amount);
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
       return res.status(400).json({ ok: false, message: 'Invalid amount provided' });
@@ -55,13 +55,13 @@ router.post('/create-order', authOptional, async (req, res) => {
       });
     }
 
-    // Amount should be in paise (already multiplied by 100 from frontend)
-    const amountInPaise = Math.round(parsedAmount);
+    // Convert rupees to paise as required by Razorpay
+    const amountInPaise = Math.round(parsedAmount * 100);
     if (amountInPaise <= 0) {
       return res.status(400).json({ ok: false, message: 'Amount must be greater than zero' });
     }
 
-    // Create Razorpay order
+    // Create Razorpay order (provider expects amount in paise)
     let razorpayOrder;
     try {
       razorpayOrder = await rzp.orders.create({
@@ -69,12 +69,12 @@ router.post('/create-order', authOptional, async (req, res) => {
         currency: currency || 'INR',
         receipt: `order_${Date.now()}`,
         notes: {
-          items: items.map(i => `${i.title} x${i.qty}`).join(', '),
+          items: Array.isArray(items) ? items.map(i => `${i.title} x${i.qty}`).join(', ') : '',
           appliedCoupon: appliedCoupon?.code || 'none',
         },
       });
     } catch (orderError) {
-      console.error('Failed to create Razorpay order:', orderError.message);
+      console.error('Failed to create Razorpay order:', orderError?.message || orderError);
       return res.status(502).json({
         ok: false,
         message: 'Failed to create order with payment provider',
@@ -100,11 +100,12 @@ router.post('/create-order', authOptional, async (req, res) => {
       });
     }
 
+    // Return full order object details expected by frontend
     return res.json({
       ok: true,
       data: {
         orderId: razorpayOrder.id,
-        amount: amountInPaise,
+        amount: razorpayOrder.amount,
         currency: razorpayOrder.currency || 'INR',
         keyId: keyId,
       },
