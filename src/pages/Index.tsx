@@ -467,15 +467,15 @@ const Index = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-5xl font-black tracking-tighter mb-4">
+      <section className="container mx-auto px-3 sm:px-4 py-12 sm:py-20">
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tighter mb-2 sm:mb-4">
             Featured <span className="text-primary">Collection</span>
           </h2>
         </div>
 
         {featuredLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="aspect-square rounded-lg bg-muted/40 animate-pulse" />
             ))}
@@ -483,16 +483,16 @@ const Index = () => {
         ) : featuredError ? (
           <div className="text-center text-sm text-muted-foreground mb-12">{featuredError}</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {(featuredProducts.length ? featuredProducts : newArrivals.slice(0, 4)).map((product) => (
               <ProductCard key={String(product._id || product.id)} {...mapToCard(product)} />
             ))}
           </div>
         )}
 
-        <div className="text-center mt-12">
-          <Link to="/shop">
-            <Button size="lg" variant="outline">
+        <div className="text-center mt-8 sm:mt-12">
+          <Link to="/shop" className="w-full sm:w-auto inline-block">
+            <Button size="lg" variant="outline" className="w-full sm:w-auto">
               View All Products
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
