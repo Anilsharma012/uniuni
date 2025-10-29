@@ -183,7 +183,7 @@ const CheckoutPayment = () => {
         },
         credentials: 'include',
         body: JSON.stringify({
-          amount: total * 100,
+          amount: total,
           currency: 'INR',
           items,
           appliedCoupon,
@@ -212,9 +212,9 @@ const CheckoutPayment = () => {
         throw new Error('Invalid amount received from server');
       }
 
-      // Show success toast
+      // Show success toast (green)
       toast({
-        title: 'Payment Initiated',
+        title: 'Payment initiated successfully',
         description: 'Opening secure payment gateway...',
       });
 
@@ -440,7 +440,7 @@ const CheckoutPayment = () => {
           {/* Delivery & Payment Options */}
           <div className="lg:col-span-2 space-y-6">
             {/* Delivery Details */}
-            <Card className="p-6 rounded-xl shadow-sm border border-gray-200">
+            <Card className="p-4 rounded-xl text-sm shadow-sm border border-gray-200">
               <h2 className="text-lg font-semibold mb-4">Delivery Details</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -508,7 +508,7 @@ const CheckoutPayment = () => {
 
             {/* Payment Options */}
             {/* Razorpay Option */}
-            <Card className={`p-6 rounded-xl shadow-sm border ${razorpaySettings?.isActive ? 'border-gray-200' : 'border-gray-200 opacity-60'}`}>
+            <Card className={`p-4 rounded-xl text-sm shadow-sm border ${razorpaySettings?.isActive ? 'border-gray-200' : 'border-gray-200 opacity-60'}`}>
               <div className="flex items-center gap-4 mb-6">
                 <div
                   className={`w-5 h-5 rounded-full border-2 ${razorpaySettings?.isActive ? 'cursor-pointer' : 'cursor-not-allowed'}`}
@@ -555,7 +555,7 @@ const CheckoutPayment = () => {
             </Card>
 
             {/* UPI QR Option */}
-            <Card className="p-6 rounded-xl shadow-sm border border-gray-200">
+            <Card className="p-4 rounded-xl text-sm shadow-sm border border-gray-200">
               <div className="flex items-center gap-4 mb-6">
                 <div
                   className="w-5 h-5 rounded-full border-2 cursor-pointer"
@@ -659,7 +659,7 @@ const CheckoutPayment = () => {
 
           {/* Order Summary */}
           <div>
-            <Card className="p-6 rounded-xl shadow-sm sticky top-24">
+            <Card className="p-4 rounded-xl text-sm shadow-sm sticky top-24">
               <h2 className="text-xl font-bold mb-6">Payment Summary</h2>
 
               <div className="space-y-4 mb-6">
