@@ -144,9 +144,9 @@ export default function AccountProfile() {
           </aside>
 
           <section className="flex-1 min-w-0">
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold">Profile</h1>
-              <p className="text-sm text-muted-foreground">View and edit your account details</p>
+            <div className="mb-4 sm:mb-6">
+              <h1 className="text-xl sm:text-2xl font-bold">Profile</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">View and edit your account details</p>
             </div>
 
             {!initial ? (
@@ -155,14 +155,14 @@ export default function AccountProfile() {
                 <Skeleton className="h-56" />
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-6 max-w-4xl">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6 max-w-4xl">
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Account</CardTitle>
-                    <CardDescription>Update your personal information</CardDescription>
+                  <CardHeader className="pb-3 sm:pb-6">
+                    <CardTitle className="text-lg sm:text-xl">Account</CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">Update your personal information</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                       <div>
                         <Label htmlFor="name">Name</Label>
                         <Input id="name" value={form.name || ""} onChange={(e) => setForm({ ...form, name: e.target.value })} />
