@@ -256,13 +256,13 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container mx-auto px-4 pt-24 pb-12">
-        <Link to="/shop" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8">
-          <ArrowLeft className="h-4 w-4 mr-2" />
+      <main className="container mx-auto px-3 sm:px-4 pt-24 pb-12">
+        <Link to="/shop" className="inline-flex items-center text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-6 sm:mb-8">
+          <ArrowLeft className="h-4 w-4 mr-2 flex-shrink-0" />
           Back to Shop
         </Link>
 
-        <div className="grid md:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12">
           <div className="aspect-square bg-secondary rounded-lg overflow-hidden">
             <img
               src={img}
@@ -282,13 +282,13 @@ const ProductDetail = () => {
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground uppercase tracking-wider mb-2">{product.category}</p>
-            <h1 className="text-4xl font-black tracking-tighter mb-4">{title}</h1>
-            <p className="text-3xl font-bold mb-6">₹{Number(product.price || 0).toLocaleString('en-IN')}</p>
-            <div className="mb-4">
-              <Badge variant={outOfStock ? 'destructive' : 'secondary'}>{outOfStock ? 'Not Available' : 'Available'}</Badge>
+            <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">{product.category}</p>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tighter mb-2 sm:mb-4">{title}</h1>
+            <p className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">₹{Number(product.price || 0).toLocaleString('en-IN')}</p>
+            <div className="mb-3 sm:mb-4">
+              <Badge variant={outOfStock ? 'destructive' : 'secondary'} className="text-xs sm:text-sm">{outOfStock ? 'Not Available' : 'Available'}</Badge>
             </div>
-            <p className="text-muted-foreground mb-8">{product.description}</p>
+            <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-6 sm:mb-8">{product.description}</p>
 
             <AvailableCoupons
               onUseNow={(code) => {
