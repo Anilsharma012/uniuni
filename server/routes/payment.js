@@ -103,20 +103,19 @@ router.post('/verify', requireAuth, async (req, res) => {
       });
     }
 
-    const SiteSetting = require('../models/SiteSetting');
-    const settings = await SiteSetting.findOne();
-    const razorpayConfig = settings?.razorpay || {};
+    // Use environment variables as primary source, database as fallback
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
-    if (!razorpayConfig.keySecret) {
+    if (!keySecret) {
       return res.status(500).json({
         ok: false,
-        message: 'Razorpay is not configured',
+        message: 'Razorpay is not configured on the server',
       });
     }
 
     // Verify signature
     const generatedSignature = crypto
-      .createHmac('sha256', razorpayConfig.keySecret)
+      .createHmac('sha256', keySecret)
       .update(`${razorpayOrderId}|${razorpayPaymentId}`)
       .digest('hex');
 
