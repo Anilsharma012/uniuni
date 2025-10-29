@@ -1653,7 +1653,7 @@ const handleProductSubmit = async (e: React.FormEvent) => {
     <div className="space-y-6">
   <div className="flex items-center justify-between">
     <div>
-      <h2 className="text-2xl font-bold text-slate-700 dark:text-slate-100">Coupon Management</h2>
+      <h2 className="text-2xl font-bold text-slate-500 dark:text-slate-200">Coupon Management</h2>
       <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">Create and manage discount coupons</p>
     </div>
 
