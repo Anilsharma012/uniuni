@@ -2910,140 +2910,164 @@ const handleProductSubmit = async (e: React.FormEvent) => {
   );
 
   const renderRazorpaySettings = () => (
-    <div className="space-y-6 max-w-2xl">
-      <div>
-        <h2 className="text-2xl font-bold">Razorpay Settings</h2>
-        <p className="text-sm text-muted-foreground">
-          Configure your Razorpay payment gateway credentials. Keys are stored securely on the backend and used for payment processing.
-        </p>
-      </div>
 
-      <Card className="bg-white rounded-xl shadow-sm p-5">
-        <CardHeader>
-          <CardTitle>Razorpay Configuration</CardTitle>
-          <CardDescription>Add your Razorpay API credentials to enable online payments</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleRazorpaySubmit} className="space-y-5">
-            <div>
-              <Label htmlFor="keyId">Razorpay Key ID</Label>
-              <Input
-                id="keyId"
-                placeholder="e.g., rzp_live_xxxxxxxxxxxxx"
-                value={razorpayForm.keyId}
-                onChange={(e) => setRazorpayForm((prev) => ({ ...prev, keyId: e.target.value }))}
-                disabled={settingsLoading || savingRazorpay || testingRazorpay}
-              />
-              <p className="text-sm text-muted-foreground mt-1">Your Razorpay public Key ID (from Settings → API Keys)</p>
-            </div>
 
-            <div>
-              <Label htmlFor="keySecret">Razorpay Key Secret</Label>
-              <Input
-                id="keySecret"
-                type="password"
-                placeholder="Enter your key secret"
-                value={razorpayForm.keySecret}
-                onChange={(e) => setRazorpayForm((prev) => ({ ...prev, keySecret: e.target.value }))}
-                disabled={settingsLoading || savingRazorpay || testingRazorpay}
-              />
-              <p className="text-sm text-muted-foreground mt-1">Your Razorpay secret key (keep this confidential)</p>
-            </div>
 
-            <div>
-              <Label htmlFor="webhookSecret">Webhook Secret (Optional)</Label>
-              <Input
-                id="webhookSecret"
-                type="password"
-                placeholder="Enter webhook secret if configured"
-                value={razorpayForm.webhookSecret}
-                onChange={(e) => setRazorpayForm((prev) => ({ ...prev, webhookSecret: e.target.value }))}
-                disabled={settingsLoading || savingRazorpay || testingRazorpay}
-              />
-              <p className="text-sm text-muted-foreground mt-1">Optional: For webhook signature verification</p>
-            </div>
+    <div className="space-y-6 max-w-2xl text-slate-800 dark:text-slate-200">
+  <div>
+    <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Razorpay Settings</h2>
+    <p className="text-sm text-slate-600 dark:text-slate-300">
+      Configure your Razorpay payment gateway credentials. Keys are stored securely on the backend and used for payment processing.
+    </p>
+  </div>
 
-            <div>
-              <Label htmlFor="currency">Currency</Label>
-              <Select
-                value={razorpayForm.currency}
-                onValueChange={(value) => setRazorpayForm((prev) => ({ ...prev, currency: value }))}
-                disabled={settingsLoading || savingRazorpay || testingRazorpay}
-              >
-                <SelectTrigger id="currency">
-                  <SelectValue placeholder="Select currency" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="INR">INR (Indian Rupee)</SelectItem>
-                  <SelectItem value="USD">USD (US Dollar)</SelectItem>
-                  <SelectItem value="EUR">EUR (Euro)</SelectItem>
-                  <SelectItem value="GBP">GBP (British Pound)</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-sm text-muted-foreground mt-1">Currency for transactions (default: INR)</p>
-            </div>
+  <Card className="bg-white dark:bg-slate-900 rounded-xl shadow-sm p-5">
+    <CardHeader>
+      <CardTitle className="text-slate-900 dark:text-slate-100">Razorpay Configuration</CardTitle>
+      <CardDescription className="text-slate-600 dark:text-slate-300">
+        Add your Razorpay API credentials to enable online payments
+      </CardDescription>
+    </CardHeader>
 
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <Label htmlFor="isActive" className="font-medium">
-                  Enable Razorpay
-                </Label>
-                <p className="text-sm text-muted-foreground">Activate to use Razorpay for checkout</p>
-              </div>
-              <Switch
-                id="isActive"
-                checked={razorpayForm.isActive}
-                onCheckedChange={(checked) => setRazorpayForm((prev) => ({ ...prev, isActive: checked }))}
-                disabled={settingsLoading || savingRazorpay || testingRazorpay}
-              />
-            </div>
+    <CardContent>
+      <form onSubmit={handleRazorpaySubmit} className="space-y-5">
+        <div>
+          <Label htmlFor="keyId" className="text-slate-700 dark:text-slate-200">Razorpay Key ID</Label>
+          <Input
+            id="keyId"
+            placeholder="e.g., rzp_live_xxxxxxxxxxxxx"
+            value={razorpayForm.keyId}
+            onChange={(e) => setRazorpayForm((prev) => ({ ...prev, keyId: e.target.value }))}
+            disabled={settingsLoading || savingRazorpay || testingRazorpay}
+            className="text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+          />
+          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+            Your Razorpay public Key ID (from Settings → API Keys)
+          </p>
+        </div>
 
-            <div className="flex flex-col sm:flex-row gap-2 pt-4">
-              <Button
-                type="submit"
-                disabled={savingRazorpay || settingsLoading || testingRazorpay}
-                className="flex-1"
-              >
-                {savingRazorpay && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Settings
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleRazorpayReset}
-                disabled={savingRazorpay || settingsLoading || testingRazorpay}
-                className="flex-1"
-              >
-                Reset
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleRazorpayTest}
-                disabled={savingRazorpay || settingsLoading || testingRazorpay || !razorpayForm.keyId.trim() || !razorpayForm.keySecret.trim()}
-                className="flex-1"
-              >
-                {testingRazorpay && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Test Connection
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+        <div>
+          <Label htmlFor="keySecret" className="text-slate-700 dark:text-slate-200">Razorpay Key Secret</Label>
+          <Input
+            id="keySecret"
+            type="password"
+            placeholder="Enter your key secret"
+            value={razorpayForm.keySecret}
+            onChange={(e) => setRazorpayForm((prev) => ({ ...prev, keySecret: e.target.value }))}
+            disabled={settingsLoading || savingRazorpay || testingRazorpay}
+            className="text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+          />
+          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+            Your Razorpay secret key (keep this confidential)
+          </p>
+        </div>
 
-      <Card className="bg-blue-50 border-blue-200">
-        <CardHeader>
-          <CardTitle className="text-blue-900">Getting Your Credentials</CardTitle>
-        </CardHeader>
-        <CardContent className="text-sm text-blue-800 space-y-2">
-          <p>1. Log in to your Razorpay Dashboard</p>
-          <p>2. Go to Settings → API Keys</p>
-          <p>3. Copy your Key ID and Key Secret</p>
-          <p>4. Paste them above and click "Test Connection"</p>
-          <p>5. Once validated, click "Save Settings"</p>
-        </CardContent>
-      </Card>
-    </div>
+        <div>
+          <Label htmlFor="webhookSecret" className="text-slate-700 dark:text-slate-200">Webhook Secret (Optional)</Label>
+          <Input
+            id="webhookSecret"
+            type="password"
+            placeholder="Enter webhook secret if configured"
+            value={razorpayForm.webhookSecret}
+            onChange={(e) => setRazorpayForm((prev) => ({ ...prev, webhookSecret: e.target.value }))}
+            disabled={settingsLoading || savingRazorpay || testingRazorpay}
+            className="text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+          />
+          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+            Optional: For webhook signature verification
+          </p>
+        </div>
+
+        <div>
+          <Label htmlFor="currency" className="text-slate-700 dark:text-slate-200">Currency</Label>
+          <Select
+            value={razorpayForm.currency}
+            onValueChange={(value) => setRazorpayForm((prev) => ({ ...prev, currency: value }))}
+            disabled={settingsLoading || savingRazorpay || testingRazorpay}
+          >
+            <SelectTrigger id="currency" className="text-slate-900 dark:text-slate-100">
+              <SelectValue placeholder="Select currency" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="INR">INR (Indian Rupee)</SelectItem>
+              <SelectItem value="USD">USD (US Dollar)</SelectItem>
+              <SelectItem value="EUR">EUR (Euro)</SelectItem>
+              <SelectItem value="GBP">GBP (British Pound)</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+            Currency for transactions (default: INR)
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <Label htmlFor="isActive" className="font-medium text-slate-800 dark:text-slate-200">
+              Enable Razorpay
+            </Label>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Activate to use Razorpay for checkout</p>
+          </div>
+          <Switch
+            id="isActive"
+            checked={razorpayForm.isActive}
+            onCheckedChange={(checked) => setRazorpayForm((prev) => ({ ...prev, isActive: checked }))}
+            disabled={settingsLoading || savingRazorpay || testingRazorpay}
+          />
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-2 pt-4">
+          <Button type="submit" disabled={savingRazorpay || settingsLoading || testingRazorpay} className="flex-1">
+            {savingRazorpay && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save Settings
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleRazorpayReset}
+            disabled={savingRazorpay || settingsLoading || testingRazorpay}
+            className="flex-1"
+          >
+            Reset
+          </Button>
+
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleRazorpayTest}
+            disabled={
+              savingRazorpay || settingsLoading || testingRazorpay ||
+              !razorpayForm.keyId.trim() || !razorpayForm.keySecret.trim()
+            }
+            className="flex-1"
+          >
+            {testingRazorpay && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Test Connection
+          </Button>
+        </div>
+      </form>
+    </CardContent>
+  </Card>
+
+  {/* Tips card with strong contrast in both modes */}
+  <Card className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800">
+    <CardHeader>
+      <CardTitle className="text-blue-900 dark:text-blue-100">Getting Your Credentials</CardTitle>
+    </CardHeader>
+    <CardContent className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
+      <p>1. Log in to your Razorpay Dashboard</p>
+      <p>2. Go to Settings → API Keys</p>
+      <p>3. Copy your Key ID and Key Secret</p>
+      <p>4. Paste them above and click "Test Connection"</p>
+      <p>5. Once validated, click "Save Settings"</p>
+    </CardContent>
+  </Card>
+</div>
+
+
+
+
+
   );
 
   const renderShiprocketSettings = () => (
