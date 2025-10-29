@@ -124,6 +124,16 @@ const CheckoutPayment = () => {
 
   const handleRazorpayPayment = async () => {
     try {
+      // Validate customer details first
+      if (!customerDetails.name || !customerDetails.phone || !customerDetails.address || !customerDetails.city || !customerDetails.state || !customerDetails.pincode) {
+        toast({
+          title: 'Missing Details',
+          description: 'Please fill in all delivery details before proceeding to payment',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       setSubmitting(true);
 
       // Ensure Razorpay SDK is loaded
@@ -140,6 +150,7 @@ const CheckoutPayment = () => {
         });
       }
 
+      // Create order on backend
       const response = await fetch('/api/payment/create-order', {
         method: 'POST',
         headers: {
@@ -163,22 +174,37 @@ const CheckoutPayment = () => {
 
       const { orderId, keyId, amount, currency } = data.data || {};
 
-      if (!orderId || !keyId) {
-        throw new Error('Invalid order details received from server');
+      // Validate response data
+      if (!orderId || !orderId.trim()) {
+        console.error('Invalid orderId:', orderId);
+        throw new Error('Invalid order ID received from server');
+      }
+      if (!keyId || !keyId.trim()) {
+        console.error('Invalid keyId:', keyId);
+        throw new Error('Razorpay configuration error');
+      }
+      if (!amount || amount <= 0) {
+        console.error('Invalid amount:', amount);
+        throw new Error('Invalid amount received from server');
       }
 
+      // Show success toast
+      toast({
+        title: 'Payment Initiated',
+        description: 'Opening secure payment gateway...',
+      });
+
       const options = {
-        key: keyId,
-        amount: amount || (total * 100),
+        key: keyId.trim(),
+        amount: amount,
         currency: currency || 'INR',
         name: 'UNI10',
         description: `Order for ₹${total}`,
-        order_id: orderId,
+        order_id: orderId.trim(),
         handler: async (response: any) => {
           try {
-            // Validate customer details
-            if (!customerDetails.name || !customerDetails.phone || !customerDetails.address || !customerDetails.city || !customerDetails.state || !customerDetails.pincode) {
-              throw new Error('Please fill in all customer details');
+            if (!response.razorpay_order_id || !response.razorpay_payment_id || !response.razorpay_signature) {
+              throw new Error('Invalid payment response from Razorpay');
             }
 
             const verifyResponse = await fetch('/api/payment/verify', {
@@ -238,9 +264,9 @@ const CheckoutPayment = () => {
           },
         },
         prefill: {
-          name: customerDetails.name || localStorage.getItem('userName') || '',
+          name: customerDetails.name,
           email: localStorage.getItem('userEmail') || '',
-          contact: customerDetails.phone || localStorage.getItem('userPhone') || '',
+          contact: customerDetails.phone,
         },
         theme: {
           color: '#EF4444',
