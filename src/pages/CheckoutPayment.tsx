@@ -160,6 +160,19 @@ const CheckoutPayment = () => {
 
       setSubmitting(true);
 
+      // If inside an iframe (e.g., Builder preview), open a top-level window to avoid permission policy restrictions
+      try {
+        if (typeof window !== 'undefined' && window.self !== window.top) {
+          const url = new URL(window.location.href);
+          url.searchParams.set('startPayment', '1');
+          window.open(url.toString(), '_blank');
+          setSubmitting(false);
+          return;
+        }
+      } catch (e) {
+        // ignore
+      }
+
       // Ensure Razorpay SDK is loaded
       if (!(window as any).Razorpay) {
         await new Promise<void>((resolve, reject) => {
