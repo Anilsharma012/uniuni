@@ -308,13 +308,24 @@ router.post('/manual', requireAuth, async (req, res) => {
   try {
     const { transactionId, amount, paymentMethod, items, appliedCoupon, name, phone, address, city, state, pincode } = req.body || {};
 
-    if (!transactionId || !transactionId.trim()) {
+    // Validate transaction ID
+    if (!transactionId || typeof transactionId !== 'string' || !transactionId.trim()) {
       return res.status(400).json({
         ok: false,
-        message: 'Transaction ID is required',
+        message: 'Valid transaction ID is required',
       });
     }
 
+    // Validate amount
+    const parsedAmount = parseFloat(amount);
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+      return res.status(400).json({
+        ok: false,
+        message: 'Valid amount is required',
+      });
+    }
+
+    // Validate items
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
         ok: false,
@@ -322,18 +333,33 @@ router.post('/manual', requireAuth, async (req, res) => {
       });
     }
 
-    if (!city || !state || !pincode) {
+    // Validate delivery details
+    if (!city || typeof city !== 'string' || !city.trim()) {
       return res.status(400).json({
         ok: false,
-        message: 'City, state, and pincode are required',
+        message: 'City is required',
       });
     }
 
-    const pinOk = /^\d{4,8}$/.test(String(pincode));
+    if (!state || typeof state !== 'string' || !state.trim()) {
+      return res.status(400).json({
+        ok: false,
+        message: 'State is required',
+      });
+    }
+
+    if (!pincode || typeof pincode !== 'string') {
+      return res.status(400).json({
+        ok: false,
+        message: 'Pincode is required',
+      });
+    }
+
+    const pinOk = /^\d{4,8}$/.test(String(pincode).trim());
     if (!pinOk) {
       return res.status(400).json({
         ok: false,
-        message: 'Invalid pincode',
+        message: 'Pincode must be between 4-8 digits',
       });
     }
 
