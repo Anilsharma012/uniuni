@@ -32,44 +32,71 @@ router.post('/create-order', authOptional, async (req, res) => {
   try {
     const { amount, currency, items, appliedCoupon } = req.body || {};
 
-    if (!amount || amount <= 0) {
-      return res.status(400).json({ ok: false, message: 'Invalid amount' });
+    // Validate amount
+    const parsedAmount = parseFloat(amount);
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+      return res.status(400).json({ ok: false, message: 'Invalid amount provided' });
     }
 
+    // Validate items
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ ok: false, message: 'No items in order' });
     }
 
-    const rzp = await getRazorpayInstance();
-
-    // Amount should be in paise (already multiplied by 100 from frontend)
-    const amountInPaise = Math.round(amount);
-
-    const razorpayOrder = await rzp.orders.create({
-      amount: amountInPaise,
-      currency: currency || 'INR',
-      receipt: `order_${Date.now()}`,
-      notes: {
-        items: items.map(i => `${i.title} x${i.qty}`).join(', '),
-        appliedCoupon: appliedCoupon?.code || 'none',
-      },
-    });
-
-    if (!razorpayOrder || !razorpayOrder.id) {
-      console.error('Invalid Razorpay order response:', razorpayOrder);
-      return res.status(500).json({
-        ok: false,
-        message: 'Failed to create Razorpay order',
-      });
-    }
-
-    // Use environment variables for keyId (with database as fallback)
-    const keyId = process.env.RAZORPAY_KEY_ID;
-    if (!keyId) {
-      console.error('Razorpay Key ID not configured');
+    // Get Razorpay instance and credentials upfront
+    let rzp;
+    try {
+      rzp = await getRazorpayInstance();
+    } catch (credError) {
+      console.error('Razorpay configuration error:', credError.message);
       return res.status(500).json({
         ok: false,
         message: 'Razorpay is not properly configured on the server',
+      });
+    }
+
+    // Amount should be in paise (already multiplied by 100 from frontend)
+    const amountInPaise = Math.round(parsedAmount);
+    if (amountInPaise <= 0) {
+      return res.status(400).json({ ok: false, message: 'Amount must be greater than zero' });
+    }
+
+    // Create Razorpay order
+    let razorpayOrder;
+    try {
+      razorpayOrder = await rzp.orders.create({
+        amount: amountInPaise,
+        currency: currency || 'INR',
+        receipt: `order_${Date.now()}`,
+        notes: {
+          items: items.map(i => `${i.title} x${i.qty}`).join(', '),
+          appliedCoupon: appliedCoupon?.code || 'none',
+        },
+      });
+    } catch (orderError) {
+      console.error('Failed to create Razorpay order:', orderError.message);
+      return res.status(502).json({
+        ok: false,
+        message: 'Failed to create order with payment provider',
+      });
+    }
+
+    // Validate Razorpay order response
+    if (!razorpayOrder || !razorpayOrder.id) {
+      console.error('Invalid Razorpay order response:', razorpayOrder);
+      return res.status(502).json({
+        ok: false,
+        message: 'Invalid response from payment provider',
+      });
+    }
+
+    // Get keyId for frontend (we already verified it exists via getRazorpayInstance)
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    if (!keyId) {
+      console.error('Razorpay Key ID not available');
+      return res.status(500).json({
+        ok: false,
+        message: 'Payment gateway configuration incomplete',
       });
     }
 
