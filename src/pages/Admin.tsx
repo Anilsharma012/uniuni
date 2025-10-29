@@ -3033,18 +3033,7 @@ const handleProductSubmit = async (e: React.FormEvent) => {
         </CardContent>
       </Card>
 
-      <Card className="bg-blue-50 border-blue-200">
-        <CardHeader>
-          <CardTitle className="text-blue-900">Getting Your Credentials</CardTitle>
-        </CardHeader>
-        <CardContent className="text-sm text-blue-800 space-y-2">
-          <p>1. Log in to your Razorpay Dashboard</p>
-          <p>2. Go to Settings → API Keys</p>
-          <p>3. Copy your Key ID and Key Secret</p>
-          <p>4. Paste them above and click "Test Connection"</p>
-          <p>5. Once validated, click "Save Settings"</p>
-        </CardContent>
-      </Card>
+     
     </div>
 
 
