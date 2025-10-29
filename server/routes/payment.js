@@ -123,20 +123,41 @@ router.post('/verify', requireAuth, async (req, res) => {
   try {
     const { razorpayOrderId, razorpayPaymentId, razorpaySignature, items, appliedCoupon, total, name, phone, address, city, state, pincode } = req.body || {};
 
-    if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+    // Validate required payment details
+    if (!razorpayOrderId || typeof razorpayOrderId !== 'string' || !razorpayOrderId.trim()) {
       return res.status(400).json({
         ok: false,
-        message: 'Missing payment verification details',
+        message: 'Missing or invalid Razorpay order ID',
       });
     }
 
-    // Use environment variables as primary source, database as fallback
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!razorpayPaymentId || typeof razorpayPaymentId !== 'string' || !razorpayPaymentId.trim()) {
+      return res.status(400).json({
+        ok: false,
+        message: 'Missing or invalid Razorpay payment ID',
+      });
+    }
 
-    if (!keySecret) {
+    if (!razorpaySignature || typeof razorpaySignature !== 'string' || !razorpaySignature.trim()) {
+      return res.status(400).json({
+        ok: false,
+        message: 'Missing or invalid payment signature',
+      });
+    }
+
+    // Get Razorpay credentials
+    let keySecret;
+    try {
+      await getRazorpayInstance(); // Verify credentials are configured
+      keySecret = process.env.RAZORPAY_KEY_SECRET;
+      if (!keySecret) {
+        throw new Error('Key secret not found');
+      }
+    } catch (credError) {
+      console.error('Razorpay configuration error:', credError.message);
       return res.status(500).json({
         ok: false,
-        message: 'Razorpay is not configured on the server',
+        message: 'Payment verification system not configured',
       });
     }
 
