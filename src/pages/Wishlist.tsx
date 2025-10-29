@@ -83,23 +83,23 @@ const Wishlist = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container mx-auto px-4 pt-24 pb-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4">
+      <main className="container mx-auto px-3 sm:px-4 pt-24 pb-12">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-2xl sm:text-4xl md:text-6xl font-black tracking-tighter mb-2 sm:mb-4">
             My <span className="text-primary">Wishlist</span>
           </h1>
-          <p className="text-muted-foreground">Your saved items</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">Your saved items</p>
         </div>
 
         {loading ? (
-          <div className="text-center py-12">Loading wishlist...</div>
+          <div className="text-center py-12 text-sm">Loading wishlist...</div>
         ) : wishlistProducts.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground mb-4">Your wishlist is empty</p>
-            <Button onClick={() => navigate('/shop')}>Browse Products</Button>
+            <p className="text-xs sm:text-sm text-muted-foreground mb-4">Your wishlist is empty</p>
+            <Button onClick={() => navigate('/shop')} className="text-xs sm:text-sm">Browse Products</Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
             {wishlistProducts.map((product) => {
               const id = String(product._id || product.id || '');
               const title = product.title || product.name || '';
@@ -124,30 +124,31 @@ const Wishlist = () => {
                         className="absolute top-3 right-3 p-2 bg-background/80 hover:bg-background rounded-full transition-all duration-200"
                       >
                         <Heart
-                          className="h-5 w-5"
+                          className="h-4 w-4 sm:h-5 sm:w-5"
                           fill="rgb(239, 68, 68)"
                           color="rgb(239, 68, 68)"
                         />
                       </button>
                     </div>
                   </Link>
-                  <div className="p-4">
+                  <div className="p-3 sm:p-4">
                     <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                       {product.category || 'Uncategorized'}
                     </p>
                     <Link to={`/product/${id}`}>
-                      <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">{title}</h3>
+                      <h3 className="font-semibold text-xs sm:text-base mb-2 group-hover:text-primary transition-colors line-clamp-2">{title}</h3>
                     </Link>
-                    <div className="flex items-center justify-between">
-                      <p className="text-lg font-bold">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm sm:text-lg font-bold">
                         ₹{Number(product.price || 0).toLocaleString('en-IN')}
                       </p>
                       <Button
                         size="icon"
                         variant="destructive"
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemove(id); }}
+                        className="h-8 w-8 sm:h-10 sm:w-10"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
                     </div>
                   </div>
