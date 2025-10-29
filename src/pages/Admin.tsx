@@ -2920,7 +2920,7 @@ const handleProductSubmit = async (e: React.FormEvent) => {
         </p>
       </div>
 
-      <Card className="bg-white rounded-xl shadow-sm p-5">
+      <Card className="bg-black rounded-xl shadow-sm p-5">
         <CardHeader>
           <CardTitle>Razorpay Configuration</CardTitle>
           <CardDescription>Add your Razorpay API credentials to enable online payments</CardDescription>
