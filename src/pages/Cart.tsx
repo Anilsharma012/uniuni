@@ -154,13 +154,19 @@ const Cart = () => {
                     {!appliedCoupon ? (
                       <div className="flex flex-col sm:flex-row gap-2 mb-3">
                         <input
-                          type="text"
-                          value={couponCode}
-                          onChange={(e) => { setCouponCode(e.target.value); setCouponError(null); }}
-                          placeholder="Enter code"
-                          className="flex-1 border border-border rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
-                          disabled={couponLoading}
-                        />
+  type="text"
+  value={couponCode}
+  onChange={(e) => { setCouponCode(e.target.value); setCouponError(null); }}
+  placeholder="Enter code"
+  className="flex-1 rounded px-2 py-1.5 text-sm
+             bg-white dark:bg-slate-900
+             text-slate-900 dark:text-slate-100
+             placeholder:text-slate-400 dark:placeholder:text-slate-500
+             caret-slate-900 dark:caret-slate-100
+             border border-slate-300 dark:border-slate-700
+             focus:outline-none focus:ring-2 focus:ring-slate-500/50 focus:border-slate-500"
+  disabled={couponLoading}
+/>
                         <Button
                           type="button"
                           onClick={handleApplyCoupon}

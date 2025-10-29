@@ -24,6 +24,30 @@ type RazorpaySettings = {
   isActive: boolean;
 };
 
+/**
+ * Safe response parser that reads the body once and handles JSON parsing errors
+ * Prevents "body stream already read" errors by reading as text first
+ */
+async function safeParseResponse<T = any>(response: Response): Promise<T> {
+  const bodyText = await response.text();
+
+  if (!bodyText) {
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} ${response.statusText}`);
+    }
+    return {} as T;
+  }
+
+  try {
+    return JSON.parse(bodyText) as T;
+  } catch {
+    if (!response.ok) {
+      throw new Error(bodyText || `HTTP ${response.status} ${response.statusText}`);
+    }
+    throw new Error('Invalid JSON response from server');
+  }
+}
+
 const CheckoutPayment = () => {
   const { items, subtotal, discountAmount, total, appliedCoupon, clearCart } = useCart();
   const { toast } = useToast();
@@ -166,7 +190,7 @@ const CheckoutPayment = () => {
         }),
       });
 
-      const data = await response.json();
+      const data = await safeParseResponse<any>(response);
 
       if (!response.ok || !data.ok) {
         throw new Error(data.message || 'Failed to create order');
@@ -230,7 +254,7 @@ const CheckoutPayment = () => {
               }),
             });
 
-            const verifyData = await verifyResponse.json();
+            const verifyData = await safeParseResponse<any>(verifyResponse);
 
             if (verifyResponse.ok && verifyData.ok) {
               toast({
@@ -337,7 +361,7 @@ const CheckoutPayment = () => {
         }),
       });
 
-      const data = await response.json();
+      const data = await safeParseResponse<any>(response);
 
       if (response.ok && data.ok) {
         toast({
