@@ -371,16 +371,16 @@ const ProductDetail = () => {
 
             {/* Simple sizes (non-inventory tracked) */}
             {!product?.trackInventoryBySize && Array.isArray(product?.sizes) && product.sizes.length > 0 && (
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <label className="block text-sm font-semibold">Size</label>
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between mb-2 sm:mb-3 gap-2">
+                  <label className="block text-xs sm:text-sm font-semibold">Size</label>
                   {product.sizeChart ? (
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowSizeChartTable(true)}
-                      className="text-xs"
+                      className="text-xs h-auto p-1"
                     >
                       <Ruler className="h-3 w-3 mr-1" />
                       Size Chart
@@ -391,14 +391,14 @@ const ProductDetail = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowSizeChart(true)}
-                      className="text-xs"
+                      className="text-xs h-auto p-1"
                     >
                       <Ruler className="h-3 w-3 mr-1" />
                       Size Chart
                     </Button>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                   {product.sizes.map((sz) => (
                     <button
                       key={sz}
@@ -408,7 +408,7 @@ const ProductDetail = () => {
                         setSizeStockError('');
                       }}
                       className={cn(
-                        'px-3 py-1 rounded border',
+                        'px-2.5 sm:px-3 py-1 sm:py-1.5 rounded border text-xs sm:text-sm',
                         selectedSize === sz ? 'bg-primary text-primary-foreground border-primary' : 'bg-transparent border-border',
                       )}
                     >
@@ -419,12 +419,12 @@ const ProductDetail = () => {
               </div>
             )}
 
-            <div className="mb-8">
-              <label className="block text-sm font-semibold mb-3">Quantity</label>
-              <div className="flex items-center gap-4">
-                <Button variant="outline" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</Button>
-                <span className="font-semibold min-w-[40px] text-center">{quantity}</span>
-                <Button variant="outline" size="icon" onClick={() => setQuantity(quantity + 1)}>+</Button>
+            <div className="mb-6 sm:mb-8">
+              <label className="block text-xs sm:text-sm font-semibold mb-2 sm:mb-3">Quantity</label>
+              <div className="flex items-center gap-3 sm:gap-4">
+                <Button variant="outline" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="h-9 w-9 sm:h-10 sm:w-10">-</Button>
+                <span className="font-semibold min-w-[40px] text-center text-sm sm:text-base">{quantity}</span>
+                <Button variant="outline" size="icon" onClick={() => setQuantity(quantity + 1)} className="h-9 w-9 sm:h-10 sm:w-10">+</Button>
               </div>
             </div>
 
