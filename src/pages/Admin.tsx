@@ -312,7 +312,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
         }
       }
 
-      console.warn('Admin apiFetch network issue �� using demo fallback for:', path, (mainErr as any)?.message || mainErr);
+      console.warn('Admin apiFetch network issue — using demo fallback for:', path, (mainErr as any)?.message || mainErr);
       const p = path.toLowerCase();
       if (p.includes('/api/auth/users')) {
         return [
@@ -3310,6 +3310,116 @@ const handleProductSubmit = async (e: React.FormEvent) => {
 
             {contactLoading && <p className="text-sm text-muted-foreground">Loading...</p>}
           </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderBillingSettings = () => (
+    <div className="space-y-6 max-w-2xl">
+      <div>
+        <h2 className="text-2xl font-bold">Company Billing Details</h2>
+        <p className="text-sm text-muted-foreground">Manage company billing information displayed on invoices.</p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Billing Information</CardTitle>
+          <CardDescription>Company details for invoice generation.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {billingLoading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ) : (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                void saveBillingInfo();
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <Label htmlFor="companyName">Company Name</Label>
+                <Input
+                  id="companyName"
+                  value={billingForm.companyName}
+                  onChange={(e) => setBillingForm((prev) => ({ ...prev, companyName: e.target.value }))}
+                  placeholder="e.g., UNI10"
+                  disabled={billingSaving}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="address">Address</Label>
+                <Textarea
+                  id="address"
+                  value={billingForm.address}
+                  onChange={(e) => setBillingForm((prev) => ({ ...prev, address: e.target.value }))}
+                  placeholder="e.g., 123 Business St, City, State"
+                  disabled={billingSaving}
+                  required
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="contactNumber">Contact Number</Label>
+                <Input
+                  id="contactNumber"
+                  value={billingForm.contactNumber}
+                  onChange={(e) => setBillingForm((prev) => ({ ...prev, contactNumber: e.target.value }))}
+                  placeholder="e.g., +91 9999999999"
+                  disabled={billingSaving}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={billingForm.email}
+                  onChange={(e) => setBillingForm((prev) => ({ ...prev, email: e.target.value }))}
+                  placeholder="e.g., billing@company.com"
+                  disabled={billingSaving}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="gstinNumber">GSTIN Number</Label>
+                <Input
+                  id="gstinNumber"
+                  value={billingForm.gstinNumber}
+                  onChange={(e) => setBillingForm((prev) => ({ ...prev, gstinNumber: e.target.value }))}
+                  placeholder="e.g., 27AAPAU1234G1Z5"
+                  disabled={billingSaving}
+                  required
+                />
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button type="submit" disabled={billingSaving || billingLoading} className="flex-1 md:flex-none">
+                  {billingSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {billingSaving ? 'Saving...' : 'Save'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => void fetchBillingInfo()}
+                  disabled={billingSaving || billingLoading}
+                >
+                  Reset
+                </Button>
+              </div>
+            </form>
+          )}
         </CardContent>
       </Card>
     </div>
