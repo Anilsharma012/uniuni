@@ -139,26 +139,26 @@ const Cart = () => {
               <Card className="p-4 sm:p-6 sticky top-24">
                 <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Order Summary</h2>
 
-                <div className="space-y-4 mb-6">
-                  <div className="flex justify-between text-sm">
+                <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+                  <div className="flex justify-between text-xs sm:text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span className="font-semibold">₹{subtotal.toLocaleString("en-IN")}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-xs sm:text-sm">
                     <span className="text-muted-foreground">Shipping</span>
                     <span className="font-semibold">Free</span>
                   </div>
 
-                  <div className="border-t border-border pt-4">
+                  <div className="border-t border-border pt-3 sm:pt-4">
                     <label className="block text-xs font-medium text-muted-foreground mb-2">Have a Coupon?</label>
                     {!appliedCoupon ? (
-                      <div className="flex gap-2 mb-3">
+                      <div className="flex flex-col sm:flex-row gap-2 mb-3">
                         <input
                           type="text"
                           value={couponCode}
                           onChange={(e) => { setCouponCode(e.target.value); setCouponError(null); }}
                           placeholder="Enter code"
-                          className="flex-1 border border-border rounded px-2 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+                          className="flex-1 border border-border rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
                           disabled={couponLoading}
                         />
                         <Button
@@ -167,13 +167,14 @@ const Cart = () => {
                           disabled={couponLoading || !couponCode.trim()}
                           size="sm"
                           variant="outline"
+                          className="text-xs h-8 sm:h-9"
                         >
                           Apply
                         </Button>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-between bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded p-2 mb-3">
-                        <div className="text-xs">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded p-2 mb-3">
+                        <div className="text-xs flex-1">
                           <span className="font-medium text-green-900 dark:text-green-100">{appliedCoupon.code}</span>
                           <span className="text-green-700 dark:text-green-300 ml-2 font-medium">-{appliedCoupon.discount}%</span>
                         </div>
@@ -182,7 +183,7 @@ const Cart = () => {
                           variant="ghost"
                           size="sm"
                           onClick={handleRemoveCoupon}
-                          className="h-6 px-2 text-xs"
+                          className="h-6 px-2 text-xs w-full sm:w-auto"
                         >
                           Remove
                         </Button>
@@ -194,21 +195,21 @@ const Cart = () => {
                   </div>
 
                   {discountAmount > 0 && (
-                    <div className="flex justify-between text-sm text-green-700 dark:text-green-300">
+                    <div className="flex justify-between text-xs sm:text-sm text-green-700 dark:text-green-300">
                       <span>Discount ({appliedCoupon?.discount}%)</span>
                       <span>-₹{discountAmount.toLocaleString("en-IN")}</span>
                     </div>
                   )}
 
-                  <div className="border-t border-border pt-3">
+                  <div className="border-t border-border pt-2 sm:pt-3">
                     <div className="flex justify-between">
-                      <span className="font-semibold">Total</span>
-                      <span className="font-bold text-lg">₹{total.toLocaleString("en-IN")}</span>
+                      <span className="font-semibold text-xs sm:text-base">Total</span>
+                      <span className="font-bold text-base sm:text-lg">₹{total.toLocaleString("en-IN")}</span>
                     </div>
                   </div>
                 </div>
 
-                <Button className="w-full" size="lg" onClick={() => navigate('/checkout')}>
+                <Button className="w-full text-xs sm:text-sm h-9 sm:h-11" onClick={() => navigate('/checkout')}>
                   Proceed to Checkout
                 </Button>
               </Card>
