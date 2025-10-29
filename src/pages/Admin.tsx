@@ -1643,126 +1643,158 @@ const handleProductSubmit = async (e: React.FormEvent) => {
   };
 
   const renderCoupons = () => (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Coupon Management</h2>
-          <p className="text-sm text-muted-foreground mt-1">Create and manage discount coupons</p>
-        </div>
-        <Dialog open={couponDialogOpen} onOpenChange={setCouponDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="rounded-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Coupon
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create New Coupon</DialogTitle>
-              <DialogDescription>Add a discount coupon for customers</DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="coupon-code">Coupon Code</Label>
-                <Input
-                  id="coupon-code"
-                  placeholder="e.g., SAVE10"
-                  value={couponForm.code}
-                  onChange={(e) => setCouponForm((p) => ({ ...p, code: e.target.value.toUpperCase() }))}
-                  disabled={couponSaving}
-                />
-              </div>
-              <div>
-                <Label htmlFor="coupon-discount">Discount (%)</Label>
-                <Input
-                  id="coupon-discount"
-                  type="number"
-                  min="1"
-                  max="100"
-                  value={couponForm.discount}
-                  onChange={(e) => setCouponForm((p) => ({ ...p, discount: Number(e.target.value) }))}
-                  disabled={couponSaving}
-                />
-              </div>
-              <div>
-                <Label htmlFor="coupon-expiry">Expiry Date</Label>
-                <Input
-                  id="coupon-expiry"
-                  type="date"
-                  value={couponForm.expiryDate}
-                  onChange={(e) => setCouponForm((p) => ({ ...p, expiryDate: e.target.value }))}
-                  disabled={couponSaving}
-                />
-              </div>
-              <div className="flex gap-2 justify-end">
-                <Button variant="outline" onClick={() => setCouponDialogOpen(false)} disabled={couponSaving}>
-                  Cancel
-                </Button>
-                <Button onClick={createCoupon} disabled={couponSaving}>
-                  {couponSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Create
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
 
-      <Card className="shadow-sm rounded-xl bg-white dark:bg-card">
-        <CardContent className="p-4">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Coupon Code</TableHead>
-                  <TableHead>Discount (%)</TableHead>
-                  <TableHead>Expiry Date</TableHead>
-                  <TableHead>Used By</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {couponsLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
-                      Loading...
-                    </TableCell>
-                  </TableRow>
-                ) : coupons.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
-                      No coupons created yet
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  coupons.map((coupon) => (
-                    <TableRow key={coupon.id} className="hover:bg-muted/50">
-                      <TableCell className="font-medium text-sm">{coupon.code}</TableCell>
-                      <TableCell className="text-sm">{coupon.discount}%</TableCell>
-                      <TableCell className="text-sm">
-                        {new Date(coupon.expiryDate).toLocaleDateString('en-IN')}
-                      </TableCell>
-                      <TableCell className="text-sm">{coupon.usedCount}</TableCell>
-                      <TableCell>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => deleteCoupon(coupon.id)}
-                          disabled={couponSaving}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+
+
+
+
+
+
+    <div className="space-y-6">
+  <div className="flex items-center justify-between">
+    <div>
+      <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Coupon Management</h2>
+      <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">Create and manage discount coupons</p>
     </div>
+
+    <Dialog open={couponDialogOpen} onOpenChange={setCouponDialogOpen}>
+      <DialogTrigger asChild>
+        <Button className="rounded-full">
+          <Plus className="h-4 w-4 mr-2" />
+          Create Coupon
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="text-slate-900 dark:text-slate-100">Create New Coupon</DialogTitle>
+          <DialogDescription className="text-slate-600 dark:text-slate-300">
+            Add a discount coupon for customers
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="coupon-code" className="text-slate-700 dark:text-slate-200">Coupon Code</Label>
+            <Input
+              id="coupon-code"
+              placeholder="e.g., SAVE10"
+              value={couponForm.code}
+              onChange={(e) =>
+                setCouponForm((p) => ({ ...p, code: e.target.value.toUpperCase() }))
+              }
+              disabled={couponSaving}
+              className="text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="coupon-discount" className="text-slate-700 dark:text-slate-200">Discount (%)</Label>
+            <Input
+              id="coupon-discount"
+              type="number"
+              min="1"
+              max="100"
+              value={couponForm.discount}
+              onChange={(e) => setCouponForm((p) => ({ ...p, discount: Number(e.target.value) }))}
+              disabled={couponSaving}
+              className="text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="coupon-expiry" className="text-slate-700 dark:text-slate-200">Expiry Date</Label>
+            <Input
+              id="coupon-expiry"
+              type="date"
+              value={couponForm.expiryDate}
+              onChange={(e) => setCouponForm((p) => ({ ...p, expiryDate: e.target.value }))}
+              disabled={couponSaving}
+              className="text-slate-900 dark:text-slate-100"
+            />
+          </div>
+
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" onClick={() => setCouponDialogOpen(false)} disabled={couponSaving}>
+              Cancel
+            </Button>
+            <Button onClick={createCoupon} disabled={couponSaving}>
+              {couponSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Create
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  </div>
+
+  <Card className="shadow-sm rounded-xl bg-white dark:bg-slate-900">
+    <CardContent className="p-4">
+      <div className="overflow-x-auto text-slate-800 dark:text-slate-200">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-slate-700 dark:text-slate-300">Coupon Code</TableHead>
+              <TableHead className="text-slate-700 dark:text-slate-300">Discount (%)</TableHead>
+              <TableHead className="text-slate-700 dark:text-slate-300">Expiry Date</TableHead>
+              <TableHead className="text-slate-700 dark:text-slate-300">Used By</TableHead>
+              <TableHead className="text-slate-700 dark:text-slate-300">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {couponsLoading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-6 text-slate-600 dark:text-slate-300">
+                  Loading...
+                </TableCell>
+              </TableRow>
+            ) : coupons.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-6 text-slate-600 dark:text-slate-300">
+                  No coupons created yet
+                </TableCell>
+              </TableRow>
+            ) : (
+              coupons.map((coupon) => (
+                <TableRow key={coupon.id} className="hover:bg-muted/50">
+                  <TableCell className="font-medium text-sm break-words">{coupon.code}</TableCell>
+                  <TableCell className="text-sm">{coupon.discount}%</TableCell>
+                  <TableCell className="text-sm">
+                    {new Date(coupon.expiryDate).toLocaleDateString("en-IN")}
+                  </TableCell>
+                  <TableCell className="text-sm">{coupon.usedCount}</TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => deleteCoupon(coupon.id)}
+                      disabled={couponSaving}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </CardContent>
+  </Card>
+</div>
+
+
+
+
+
+
+
   );
+
+
+
+
 
   if (authLoading) {
     return (
