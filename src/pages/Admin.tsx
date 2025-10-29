@@ -926,7 +926,14 @@ const Admin = () => {
         email: billingForm.email.trim(),
         gstinNumber: billingForm.gstinNumber.trim(),
       };
-      await apiFetch<any>(`/api/admin/billing-info`, { method: 'POST', body: JSON.stringify(payload) });
+      const res = await api(`/api/admin/billing-info`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        throw new Error(res.json?.message || 'Failed to save billing info');
+      }
       toast.success('Company billing details saved');
       await fetchBillingInfo();
     } catch (e:any) {
