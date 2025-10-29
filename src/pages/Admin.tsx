@@ -34,6 +34,8 @@ import {
   Megaphone,
   Star,
   Percent,
+  Menu,
+  X,
 } from 'lucide-react';
 import {
   Dialog,
