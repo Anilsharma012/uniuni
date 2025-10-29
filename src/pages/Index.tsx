@@ -501,15 +501,15 @@ const Index = () => {
       </section>
 
       {/* New Arrivals */}
-      <section className="container mx-auto px-4 pb-20">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-5xl font-black tracking-tighter mb-4">
+      <section className="container mx-auto px-3 sm:px-4 pb-12 sm:pb-20">
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tighter mb-2 sm:mb-4">
             New <span className="text-primary">Arrivals</span>
           </h2>
-          <p className="text-muted-foreground">Discover our latest additions</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">Discover our latest additions</p>
         </div>
         {newArrivalsLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="aspect-square rounded-lg bg-muted/40 animate-pulse" />
             ))}
@@ -519,10 +519,10 @@ const Index = () => {
         ) : (
           <>
             <NewArrivalsScroller items={newArrivals} direction="ltr" />
-            <div className="h-4" />
+            <div className="h-3 sm:h-4" />
             <NewArrivalsScroller items={newArrivals} direction="rtl" />
-            <div className="text-center mt-12">
-              <Link to="/shop/new-arrivals" className="text-sm text-muted-foreground hover:text-foreground underline-offset-4 hover:underline">
+            <div className="text-center mt-8 sm:mt-12">
+              <Link to="/shop/new-arrivals" className="text-xs sm:text-sm text-muted-foreground hover:text-foreground underline-offset-4 hover:underline">
                 View All
               </Link>
             </div>
