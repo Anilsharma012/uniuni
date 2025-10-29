@@ -89,6 +89,14 @@ type ShiprocketSettingsForm = {
   channelId: string;
 };
 
+type BillingInfoForm = {
+  companyName: string;
+  address: string;
+  contactNumber: string;
+  email: string;
+  gstinNumber: string;
+};
+
 type IntegrationSettings = {
   id?: string;
   domain: string;
