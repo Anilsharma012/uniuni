@@ -407,6 +407,7 @@ const Admin = () => {
   const navigate = useNavigate();
 
   const [activeSection, setActiveSection] = useState<Section>('overview');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersCurrentPage, setOrdersCurrentPage] = useState(1);
