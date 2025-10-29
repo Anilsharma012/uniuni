@@ -27,8 +27,7 @@ const PORT = process.env.PORT || 5000;
 const allowed = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
-  "http://localhost:8080",
-  "https://ff8d2ba85401451bad453bb609262d07-vortex-hub.projects.builder.my"
+  'http://localhost:8080',
 ];
 if (process.env.CLIENT_URL) allowed.push(process.env.CLIENT_URL);
 
@@ -37,24 +36,30 @@ app.use((req, res, next) => {
   next();
 });
 
+// Use a flexible origin checker to allow builder preview domains and other known hosts
 app.use(cors({
   origin: function (origin, callback) {
     // allow requests with no origin (like curl or server-to-server)
     if (!origin) return callback(null, true);
-    const allowedOrigins = Array.isArray(allowed) ? allowed : [];
-    if (
-      allowedOrigins.includes(origin) ||
-      origin.endsWith('.fly.dev') ||
-      origin.includes('.builder.my') ||
-      origin.includes('.builder.codes') ||
-      origin.includes('.projects.builder.codes') ||
-      origin.includes('localhost') ||
-      origin.includes('127.0.0.1') ||
-      // Allow any preview domain (typically format: word-word.tld)
-      /^https:\/\/[a-z\-]+\.(name|net|dev|io)$/.test(origin)
-    ) {
-      return callback(null, true);
-    }
+
+    // Normalize origin to lower case
+    const o = String(origin).toLowerCase();
+
+    // Allow localhost and 127.0.0.1
+    if (o.includes('localhost') || o.includes('127.0.0.1')) return callback(null, true);
+
+    // Allow configured client url
+    if (process.env.CLIENT_URL && o === String(process.env.CLIENT_URL).toLowerCase()) return callback(null, true);
+
+    // Allow Fly and Netlify preview or similar hosts
+    if (o.endsWith('.fly.dev') || o.endsWith('.netlify.app')) return callback(null, true);
+
+    // Allow Builder preview domains and subdomains (builder.codes / builder.my / builder.io / projects.builder.codes)
+    if (o.includes('.builder.my') || o.includes('.builder.codes') || o.includes('.builder.io') || o.includes('projects.builder.codes')) return callback(null, true);
+
+    // Allow common preview host patterns like word-word.tld
+    if (/^https:\/\/[a-z0-9\-]+\.(name|net|dev|io|app)$/.test(o)) return callback(null, true);
+
     // Default deny
     console.warn('Blocked CORS for origin:', origin);
     return callback(new Error('Not allowed by CORS'));

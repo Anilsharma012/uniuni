@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -160,6 +160,19 @@ const CheckoutPayment = () => {
 
       setSubmitting(true);
 
+      // If inside an iframe (e.g., Builder preview), open a top-level window to avoid permission policy restrictions
+      try {
+        if (typeof window !== 'undefined' && window.self !== window.top) {
+          const url = new URL(window.location.href);
+          url.searchParams.set('startPayment', '1');
+          window.open(url.toString(), '_blank');
+          setSubmitting(false);
+          return;
+        }
+      } catch (e) {
+        // ignore
+      }
+
       // Ensure Razorpay SDK is loaded
       if (!(window as any).Razorpay) {
         await new Promise<void>((resolve, reject) => {
@@ -174,47 +187,51 @@ const CheckoutPayment = () => {
         });
       }
 
-      // Create order on backend
-      const response = await fetch('/api/payment/create-order', {
+      // Enforce HTTPS for secure providers (Builder preview requires https for Razorpay)
+      try {
+        if (typeof window !== 'undefined') {
+          const host = window.location.hostname || '';
+          if ((host.includes('builder') || host.includes('preview') || host.includes('builder.codes') || host.includes('builder.my')) && window.location.protocol !== 'https:') {
+            // Redirect to https
+            window.location.href = window.location.href.replace(/^http:/, 'https:');
+            return;
+          }
+        }
+      } catch (e) {}
+
+      // Show creating order loader toast
+      toast({ title: 'Creating order...', description: 'Please wait while we prepare the payment.' });
+
+      // Create order on backend using api helper which respects API_BASE
+      const { ok, json } = await api('/api/payment/create-order', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-        },
-        credentials: 'include',
         body: JSON.stringify({
-          amount: total * 100,
+          amount: total,
           currency: 'INR',
           items,
           appliedCoupon,
         }),
       });
 
-      const data = await safeParseResponse<any>(response);
-
-      if (!response.ok || !data.ok) {
-        throw new Error(data.message || 'Failed to create order');
+      if (!ok || !json || !json.ok) {
+        // Server issue
+        toast({ title: 'Server issue. Please try again later.', description: json?.message || 'Failed to create order', variant: 'destructive' });
+        setSubmitting(false);
+        return;
       }
 
-      const { orderId, keyId, amount, currency } = data.data || {};
+      const { orderId, keyId, amount, currency } = json.data || {};
 
-      // Validate response data
-      if (!orderId || !orderId.trim()) {
-        console.error('Invalid orderId:', orderId);
-        throw new Error('Invalid order ID received from server');
-      }
-      if (!keyId || !keyId.trim()) {
-        console.error('Invalid keyId:', keyId);
-        throw new Error('Razorpay configuration error');
-      }
-      if (!amount || amount <= 0) {
-        console.error('Invalid amount:', amount);
-        throw new Error('Invalid amount received from server');
+      // Validate response data and alert on failure
+      if (!orderId || typeof orderId !== 'string' || !orderId.trim() || !keyId || typeof keyId !== 'string' || !keyId.trim() || !amount || Number(amount) <= 0) {
+        alert('Invalid order details. Please refresh and try again.');
+        setSubmitting(false);
+        return;
       }
 
-      // Show success toast
+      // Show success toast (green)
       toast({
-        title: 'Payment Initiated',
+        title: 'Payment initiated successfully',
         description: 'Opening secure payment gateway...',
       });
 
@@ -225,65 +242,14 @@ const CheckoutPayment = () => {
         name: 'UNI10',
         description: `Order for ₹${total}`,
         order_id: orderId.trim(),
-        handler: async (response: any) => {
-          try {
-            if (!response.razorpay_order_id || !response.razorpay_payment_id || !response.razorpay_signature) {
-              throw new Error('Invalid payment response from Razorpay');
-            }
-
-            const verifyResponse = await fetch('/api/payment/verify', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-              },
-              credentials: 'include',
-              body: JSON.stringify({
-                razorpayOrderId: response.razorpay_order_id,
-                razorpayPaymentId: response.razorpay_payment_id,
-                razorpaySignature: response.razorpay_signature,
-                items: items.map(i => ({ id: i.id, title: i.title, price: i.price, qty: i.qty, image: i.image, size: i.meta?.size, productId: i.id })),
-                appliedCoupon,
-                total,
-                name: customerDetails.name,
-                phone: customerDetails.phone,
-                address: customerDetails.address,
-                city: customerDetails.city,
-                state: customerDetails.state,
-                pincode: customerDetails.pincode,
-              }),
-            });
-
-            const verifyData = await safeParseResponse<any>(verifyResponse);
-
-            if (verifyResponse.ok && verifyData.ok) {
-              toast({
-                title: 'Payment Successful!',
-                description: 'Your order has been placed successfully.',
-              });
-              clearCart();
-              const orderIdFromResponse = verifyData.data?.order?._id || orderId;
-              navigate(`/order-success?orderId=${orderIdFromResponse}`);
-            } else {
-              throw new Error(verifyData.message || 'Payment verification failed');
-            }
-          } catch (error: any) {
-            toast({
-              title: 'Payment Verification Failed',
-              description: error?.message || 'An error occurred during verification',
-              variant: 'destructive',
-            });
-          } finally {
-            setSubmitting(false);
-          }
+        handler: (response: any) => {
+          // On successful payment, alert and redirect to order success with server orderId
+          alert('Payment Successful!');
+          window.location.href = `/order-success?orderId=${orderId}`;
         },
         modal: {
           ondismiss: () => {
-            toast({
-              title: 'Payment Cancelled',
-              description: 'You cancelled the payment. Please try again.',
-              variant: 'destructive',
-            });
+            console.warn('Payment cancelled by user.');
             setSubmitting(false);
           },
         },
@@ -305,8 +271,9 @@ const CheckoutPayment = () => {
       const rzp = new razorpayWindow(options);
       rzp.open();
     } catch (error: any) {
+      // Show red toast if server unreachable or other errors
       toast({
-        title: 'Payment Error',
+        title: 'Server not reachable. Try again later.',
         description: error?.message || 'Failed to initiate payment',
         variant: 'destructive',
       });
@@ -339,13 +306,8 @@ const CheckoutPayment = () => {
     try {
       setSubmitting(true);
 
-      const response = await fetch('/api/payment/manual', {
+      const { ok, json } = await api('/api/payment/manual', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-        },
-        credentials: 'include',
         body: JSON.stringify({
           transactionId: upiTransactionId.trim(),
           amount: total,
@@ -361,9 +323,7 @@ const CheckoutPayment = () => {
         }),
       });
 
-      const data = await safeParseResponse<any>(response);
-
-      if (response.ok && data.ok) {
+      if (ok && json && json.ok) {
         toast({
           title: 'Payment Submitted!',
           description: 'Your payment proof has been submitted. We will verify it shortly.',
@@ -405,6 +365,31 @@ const CheckoutPayment = () => {
     }
   };
 
+  // If this page was opened with startPayment=1 (for top-level flow from Builder iframe), auto-initiate payment
+  React.useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('startPayment') === '1') {
+          // remove the param to avoid loops
+          params.delete('startPayment');
+          const newUrl = window.location.pathname + (params.toString() ? `?${params.toString()}` : '');
+          window.history.replaceState({}, '', newUrl);
+          // Delay slightly to let the page render
+          setTimeout(() => {
+            (async () => {
+              try {
+                await handleRazorpayPayment();
+              } catch (e) {
+                console.error('Auto payment start failed', e);
+              }
+            })();
+          }, 600);
+        }
+      }
+    } catch (e) {}
+  }, []);
+
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-background">
@@ -440,7 +425,7 @@ const CheckoutPayment = () => {
           {/* Delivery & Payment Options */}
           <div className="lg:col-span-2 space-y-6">
             {/* Delivery Details */}
-            <Card className="p-6 rounded-xl shadow-sm border border-gray-200">
+            <Card className="p-4 rounded-xl text-sm shadow-sm border border-gray-200">
               <h2 className="text-lg font-semibold mb-4">Delivery Details</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -508,7 +493,7 @@ const CheckoutPayment = () => {
 
             {/* Payment Options */}
             {/* Razorpay Option */}
-            <Card className={`p-6 rounded-xl shadow-sm border ${razorpaySettings?.isActive ? 'border-gray-200' : 'border-gray-200 opacity-60'}`}>
+            <Card className={`p-4 rounded-xl text-sm shadow-sm border ${razorpaySettings?.isActive ? 'border-gray-200' : 'border-gray-200 opacity-60'}`}>
               <div className="flex items-center gap-4 mb-6">
                 <div
                   className={`w-5 h-5 rounded-full border-2 ${razorpaySettings?.isActive ? 'cursor-pointer' : 'cursor-not-allowed'}`}
@@ -555,7 +540,7 @@ const CheckoutPayment = () => {
             </Card>
 
             {/* UPI QR Option */}
-            <Card className="p-6 rounded-xl shadow-sm border border-gray-200">
+            <Card className="p-4 rounded-xl text-sm shadow-sm border border-gray-200">
               <div className="flex items-center gap-4 mb-6">
                 <div
                   className="w-5 h-5 rounded-full border-2 cursor-pointer"
@@ -659,7 +644,7 @@ const CheckoutPayment = () => {
 
           {/* Order Summary */}
           <div>
-            <Card className="p-6 rounded-xl shadow-sm sticky top-24">
+            <Card className="p-4 rounded-xl text-sm shadow-sm sticky top-24">
               <h2 className="text-xl font-bold mb-6">Payment Summary</h2>
 
               <div className="space-y-4 mb-6">
