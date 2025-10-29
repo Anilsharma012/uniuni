@@ -254,7 +254,7 @@ const CheckoutPayment = () => {
               }),
             });
 
-            const verifyData = await verifyResponse.json();
+            const verifyData = await safeParseResponse<any>(verifyResponse);
 
             if (verifyResponse.ok && verifyData.ok) {
               toast({
