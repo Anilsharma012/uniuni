@@ -13,13 +13,17 @@ const getRazorpayInstance = async () => {
   const settings = await SiteSetting.findOne();
   const razorpayConfig = settings?.razorpay || {};
 
-  if (!razorpayConfig.keyId || !razorpayConfig.keySecret) {
+  // Use environment variables as primary source, database as fallback
+  const keyId = process.env.RAZORPAY_KEY_ID || razorpayConfig.keyId;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET || razorpayConfig.keySecret;
+
+  if (!keyId || !keySecret) {
     throw new Error('Razorpay is not configured. Please contact support.');
   }
 
   return new Razorpay({
-    key_id: razorpayConfig.keyId,
-    key_secret: razorpayConfig.keySecret,
+    key_id: keyId,
+    key_secret: keySecret,
   });
 };
 
