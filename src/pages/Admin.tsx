@@ -548,6 +548,17 @@ const Admin = () => {
   const [razorpayForm, setRazorpayForm] = useState<RazorpaySettingsForm>(createDefaultRazorpaySettings);
   const [shiprocketForm, setShiprocketForm] = useState<ShiprocketSettingsForm>(createDefaultShiprocketSettings);
   const [savingPayment, setSavingPayment] = useState(false);
+
+  // Billing info state
+  const [billingForm, setBillingForm] = useState<BillingInfoForm>({
+    companyName: 'UNI10',
+    address: '',
+    contactNumber: '',
+    email: '',
+    gstinNumber: '',
+  });
+  const [billingLoading, setBillingLoading] = useState(false);
+  const [billingSaving, setBillingSaving] = useState(false);
   const [savingRazorpay, setSavingRazorpay] = useState(false);
   const [testingRazorpay, setTestingRazorpay] = useState(false);
   const [savingShiprocket, setSavingShiprocket] = useState(false);
