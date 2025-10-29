@@ -111,6 +111,7 @@ const NAV_ITEMS = [
     { id: 'home', label: 'Home Ticker & New Arrivals', icon: LayoutDashboard },
     { id: 'support', label: 'Support Center', icon: MessageCircle },
     { id: 'contact', label: 'Contact Settings', icon: MessageCircle },
+    { id: 'billing', label: 'Company Billing Details', icon: CreditCard },
     { id: 'payment', label: 'Payment Settings', icon: CreditCard },
     { id: 'razorpaySettings', label: 'Razorpay Settings', icon: CreditCard },
     { id: 'shiprocket', label: 'Shiprocket Settings', icon: Truck },
