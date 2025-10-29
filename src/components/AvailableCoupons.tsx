@@ -50,35 +50,35 @@ export const AvailableCoupons: React.FC<Props> = ({ onUseNow }) => {
   }
 
   return (
-    <div className="my-8 p-3 rounded-lg border border-gray-200 bg-[#f9fafb]">
+    <div className="my-8 p-3 rounded-lg border border-gray-200 bg-[#f9fafb] dark:bg-slate-900 dark:border-slate-700">
       {/* Mobile collapsible header */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="md:hidden w-full flex items-center justify-between"
       >
-        <h3 className="font-semibold text-sm">{expanded ? 'Hide' : 'Show'} Coupons</h3>
+        <h3 className="font-semibold text-sm text-foreground">{expanded ? 'Hide' : 'Show'} Coupons</h3>
         {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
       </button>
 
       {/* Desktop or expanded mobile */}
       {expanded && (
         <div className="mt-3 md:mt-0">
-          <h3 className="hidden md:block font-semibold text-sm mb-3">Available Coupons</h3>
+          <h3 className="hidden md:block font-semibold text-sm mb-3 text-foreground">Available Coupons</h3>
           <div className="space-y-2">
             {coupons.map((coupon) => (
               <div
                 key={coupon.code}
-                className="flex items-center justify-between p-2 rounded bg-white border border-gray-100"
+                className="flex items-center justify-between p-3 rounded-md bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700"
               >
                 <div>
-                  <p className="font-bold text-sm">{coupon.code}</p>
-                  <p className="text-xs text-gray-600">{coupon.discount}% off</p>
+                  <p className="font-bold text-sm text-[#111827] dark:text-white">{coupon.code}</p>
+                  <p className="text-xs text-muted-foreground">{coupon.discount}% off</p>
                 </div>
                 <Button
                   size="sm"
-                  variant="primary"
+                  variant="outline"
                   onClick={() => handleUseNow(coupon.code)}
-                  className="text-xs"
+                  className="text-xs whitespace-nowrap"
                 >
                   Use Now
                 </Button>

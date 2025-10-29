@@ -44,10 +44,21 @@ export function InvoicePage() {
           return res.json?.data as Order;
         });
 
-        const businessPromise = api(`/api/settings/business`).then((res) => {
+        const businessPromise = (async () => {
+          // Try to fetch billing info first
+          try {
+            const res = await api(`/api/admin/billing-info?v=${Date.now()}`);
+            if (res.ok && res.json?.data) {
+              return res.json.data as any;
+            }
+          } catch (e) {
+            console.warn('Failed to fetch billing info:', e);
+          }
+          // Fallback to business settings
+          const res = await api(`/api/settings/business`);
           if (!res.ok) return null;
           return res.json?.data as BusinessInfo | null;
-        });
+        })();
 
         const invoicePromise = api(`/api/invoices/by-order/${orderId}`).then((res) => {
           if (!res.ok) return null;

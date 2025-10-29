@@ -138,14 +138,16 @@ export function InvoiceDisplay({ order, invoice, businessInfo, isLoading, error 
           <div>
             <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Bill To</p>
             <div className="text-sm space-y-1">
-              <p className="font-semibold">{order.name}</p>
-              <p>{order.address}</p>
-              <p>
-                {order.city}
-                {order.state && `, ${order.state}`}
-                {order.pincode && ` ${order.pincode}`}
-              </p>
-              {order.phone && <p>{order.phone}</p>}
+              <p className="font-semibold">{businessInfo?.companyName || 'UNI10'}</p>
+              <p>{businessInfo?.address}</p>
+              {businessInfo?.contactNumber && <p>{businessInfo.contactNumber}</p>}
+              {businessInfo?.email && <p>{businessInfo.email}</p>}
+              {businessInfo?.gstinNumber && (
+                <>
+                  <p className="text-xs text-muted-foreground mt-2">GSTIN:</p>
+                  <p>{businessInfo.gstinNumber}</p>
+                </>
+              )}
             </div>
           </div>
           <div>

@@ -46,6 +46,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { api } from '@/lib/api';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
@@ -89,6 +90,14 @@ type ShiprocketSettingsForm = {
   channelId: string;
 };
 
+type BillingInfoForm = {
+  companyName: string;
+  address: string;
+  contactNumber: string;
+  email: string;
+  gstinNumber: string;
+};
+
 type IntegrationSettings = {
   id?: string;
   domain: string;
@@ -111,6 +120,7 @@ const NAV_ITEMS = [
     { id: 'home', label: 'Home Ticker & New Arrivals', icon: LayoutDashboard },
     { id: 'support', label: 'Support Center', icon: MessageCircle },
     { id: 'contact', label: 'Contact Settings', icon: MessageCircle },
+    { id: 'billing', label: 'Company Billing Details', icon: CreditCard },
     { id: 'payment', label: 'Payment Settings', icon: CreditCard },
     { id: 'razorpaySettings', label: 'Razorpay Settings', icon: CreditCard },
     { id: 'shiprocket', label: 'Shiprocket Settings', icon: Truck },
@@ -539,6 +549,17 @@ const Admin = () => {
   const [razorpayForm, setRazorpayForm] = useState<RazorpaySettingsForm>(createDefaultRazorpaySettings);
   const [shiprocketForm, setShiprocketForm] = useState<ShiprocketSettingsForm>(createDefaultShiprocketSettings);
   const [savingPayment, setSavingPayment] = useState(false);
+
+  // Billing info state
+  const [billingForm, setBillingForm] = useState<BillingInfoForm>({
+    companyName: 'UNI10',
+    address: '',
+    contactNumber: '',
+    email: '',
+    gstinNumber: '',
+  });
+  const [billingLoading, setBillingLoading] = useState(false);
+  const [billingSaving, setBillingSaving] = useState(false);
   const [savingRazorpay, setSavingRazorpay] = useState(false);
   const [testingRazorpay, setTestingRazorpay] = useState(false);
   const [savingShiprocket, setSavingShiprocket] = useState(false);
@@ -683,6 +704,9 @@ const Admin = () => {
     }
     if (activeSection === 'coupons') {
       void fetchCoupons();
+    }
+    if (activeSection === 'billing') {
+      void fetchBillingInfo();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSection, overviewRange, navigate]);
@@ -833,6 +857,89 @@ const Admin = () => {
       toast.error(e?.message || 'Failed to save contact settings');
     } finally {
       setContactSaving(false);
+    }
+  };
+
+  const fetchBillingInfo = async () => {
+    try {
+      setBillingLoading(true);
+      const res = await api(`/api/admin/billing-info?v=${Date.now()}`);
+      if (res.ok && res.json && res.json.data) {
+        const data = res.json.data;
+        setBillingForm({
+          companyName: String(data.companyName || 'UNI10'),
+          address: String(data.address || ''),
+          contactNumber: String(data.contactNumber || ''),
+          email: String(data.email || ''),
+          gstinNumber: String(data.gstinNumber || ''),
+        });
+      } else {
+        setBillingForm({
+          companyName: 'UNI10',
+          address: '',
+          contactNumber: '',
+          email: '',
+          gstinNumber: '',
+        });
+      }
+    } catch (e:any) {
+      console.warn('Failed to load billing info', e?.message || e);
+      setBillingForm({
+        companyName: 'UNI10',
+        address: '',
+        contactNumber: '',
+        email: '',
+        gstinNumber: '',
+      });
+    } finally {
+      setBillingLoading(false);
+    }
+  };
+
+  const saveBillingInfo = async () => {
+    try {
+      setBillingSaving(true);
+      if (!billingForm.companyName.trim()) {
+        toast.error('Company name is required');
+        return;
+      }
+      if (!billingForm.address.trim()) {
+        toast.error('Address is required');
+        return;
+      }
+      if (!billingForm.contactNumber.trim()) {
+        toast.error('Contact number is required');
+        return;
+      }
+      if (!billingForm.email.trim()) {
+        toast.error('Email is required');
+        return;
+      }
+      if (!billingForm.gstinNumber.trim()) {
+        toast.error('GSTIN number is required');
+        return;
+      }
+      const payload = {
+        companyName: billingForm.companyName.trim(),
+        address: billingForm.address.trim(),
+        contactNumber: billingForm.contactNumber.trim(),
+        email: billingForm.email.trim(),
+        gstinNumber: billingForm.gstinNumber.trim(),
+      };
+      const res = await api(`/api/admin/billing-info`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        throw new Error(res.json?.message || 'Failed to save billing info');
+      }
+      toast.success('Company billing details saved');
+      await fetchBillingInfo();
+    } catch (e:any) {
+      toast.error(e?.message || 'Failed to save billing info');
+    } finally {
+      setBillingSaving(false);
     }
   };
 
@@ -3232,6 +3339,116 @@ const handleProductSubmit = async (e: React.FormEvent) => {
     </div>
   );
 
+  const renderBillingSettings = () => (
+    <div className="space-y-6 max-w-2xl">
+      <div>
+        <h2 className="text-2xl font-bold">Company Billing Details</h2>
+        <p className="text-sm text-muted-foreground">Manage company billing information displayed on invoices.</p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Billing Information</CardTitle>
+          <CardDescription>Company details for invoice generation.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {billingLoading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ) : (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                void saveBillingInfo();
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <Label htmlFor="companyName">Company Name</Label>
+                <Input
+                  id="companyName"
+                  value={billingForm.companyName}
+                  onChange={(e) => setBillingForm((prev) => ({ ...prev, companyName: e.target.value }))}
+                  placeholder="e.g., UNI10"
+                  disabled={billingSaving}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="address">Address</Label>
+                <Textarea
+                  id="address"
+                  value={billingForm.address}
+                  onChange={(e) => setBillingForm((prev) => ({ ...prev, address: e.target.value }))}
+                  placeholder="e.g., 123 Business St, City, State"
+                  disabled={billingSaving}
+                  required
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="contactNumber">Contact Number</Label>
+                <Input
+                  id="contactNumber"
+                  value={billingForm.contactNumber}
+                  onChange={(e) => setBillingForm((prev) => ({ ...prev, contactNumber: e.target.value }))}
+                  placeholder="e.g., +91 9999999999"
+                  disabled={billingSaving}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={billingForm.email}
+                  onChange={(e) => setBillingForm((prev) => ({ ...prev, email: e.target.value }))}
+                  placeholder="e.g., billing@company.com"
+                  disabled={billingSaving}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="gstinNumber">GSTIN Number</Label>
+                <Input
+                  id="gstinNumber"
+                  value={billingForm.gstinNumber}
+                  onChange={(e) => setBillingForm((prev) => ({ ...prev, gstinNumber: e.target.value }))}
+                  placeholder="e.g., 27AAPAU1234G1Z5"
+                  disabled={billingSaving}
+                  required
+                />
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button type="submit" disabled={billingSaving || billingLoading} className="flex-1 md:flex-none">
+                  {billingSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {billingSaving ? 'Saving...' : 'Save'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => void fetchBillingInfo()}
+                  disabled={billingSaving || billingLoading}
+                >
+                  Reset
+                </Button>
+              </div>
+            </form>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+
   const renderHomeSettings = () => (
     <div className="space-y-6">
       <Card>
@@ -3618,6 +3835,8 @@ const handleProductSubmit = async (e: React.FormEvent) => {
         return null;
       case 'contact':
         return renderContactSettings();
+      case 'billing':
+        return renderBillingSettings();
       case 'payment':
         return renderPaymentSettings();
       case 'razorpaySettings':
