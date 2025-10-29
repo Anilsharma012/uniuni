@@ -13,13 +13,17 @@ const getRazorpayInstance = async () => {
   const settings = await SiteSetting.findOne();
   const razorpayConfig = settings?.razorpay || {};
 
-  if (!razorpayConfig.keyId || !razorpayConfig.keySecret) {
+  // Use environment variables as primary source, database as fallback
+  const keyId = process.env.RAZORPAY_KEY_ID || razorpayConfig.keyId;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET || razorpayConfig.keySecret;
+
+  if (!keyId || !keySecret) {
     throw new Error('Razorpay is not configured. Please contact support.');
   }
 
   return new Razorpay({
-    key_id: razorpayConfig.keyId,
-    key_secret: razorpayConfig.keySecret,
+    key_id: keyId,
+    key_secret: keySecret,
   });
 };
 
@@ -38,8 +42,11 @@ router.post('/create-order', authOptional, async (req, res) => {
 
     const rzp = await getRazorpayInstance();
 
+    // Amount should be in paise (already multiplied by 100 from frontend)
+    const amountInPaise = Math.round(amount);
+
     const razorpayOrder = await rzp.orders.create({
-      amount: Math.round(amount),
+      amount: amountInPaise,
       currency: currency || 'INR',
       receipt: `order_${Date.now()}`,
       notes: {
@@ -48,10 +55,31 @@ router.post('/create-order', authOptional, async (req, res) => {
       },
     });
 
+    if (!razorpayOrder || !razorpayOrder.id) {
+      console.error('Invalid Razorpay order response:', razorpayOrder);
+      return res.status(500).json({
+        ok: false,
+        message: 'Failed to create Razorpay order',
+      });
+    }
+
+    // Use environment variables for keyId (with database as fallback)
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    if (!keyId) {
+      console.error('Razorpay Key ID not configured');
+      return res.status(500).json({
+        ok: false,
+        message: 'Razorpay is not properly configured on the server',
+      });
+    }
+
     return res.json({
       ok: true,
       data: {
         orderId: razorpayOrder.id,
+        amount: amountInPaise,
+        currency: razorpayOrder.currency || 'INR',
+        keyId: keyId,
       },
     });
   } catch (error) {
@@ -75,20 +103,19 @@ router.post('/verify', requireAuth, async (req, res) => {
       });
     }
 
-    const SiteSetting = require('../models/SiteSetting');
-    const settings = await SiteSetting.findOne();
-    const razorpayConfig = settings?.razorpay || {};
+    // Use environment variables as primary source, database as fallback
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
-    if (!razorpayConfig.keySecret) {
+    if (!keySecret) {
       return res.status(500).json({
         ok: false,
-        message: 'Razorpay is not configured',
+        message: 'Razorpay is not configured on the server',
       });
     }
 
     // Verify signature
     const generatedSignature = crypto
-      .createHmac('sha256', razorpayConfig.keySecret)
+      .createHmac('sha256', keySecret)
       .update(`${razorpayOrderId}|${razorpayPaymentId}`)
       .digest('hex');
 

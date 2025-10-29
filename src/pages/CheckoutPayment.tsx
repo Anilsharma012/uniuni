@@ -124,8 +124,14 @@ const CheckoutPayment = () => {
 
   const handleRazorpayPayment = async () => {
     try {
-      if (!razorpaySettings?.keyId) {
-        throw new Error('Razorpay is not configured. Please contact support.');
+      // Validate customer details first
+      if (!customerDetails.name || !customerDetails.phone || !customerDetails.address || !customerDetails.city || !customerDetails.state || !customerDetails.pincode) {
+        toast({
+          title: 'Missing Details',
+          description: 'Please fill in all delivery details before proceeding to payment',
+          variant: 'destructive',
+        });
+        return;
       }
 
       setSubmitting(true);
@@ -144,6 +150,7 @@ const CheckoutPayment = () => {
         });
       }
 
+      // Create order on backend
       const response = await fetch('/api/payment/create-order', {
         method: 'POST',
         headers: {
@@ -153,7 +160,7 @@ const CheckoutPayment = () => {
         credentials: 'include',
         body: JSON.stringify({
           amount: total * 100,
-          currency: razorpaySettings.currency || 'INR',
+          currency: 'INR',
           items,
           appliedCoupon,
         }),
@@ -165,23 +172,39 @@ const CheckoutPayment = () => {
         throw new Error(data.message || 'Failed to create order');
       }
 
-      const orderId = data.data?.orderId;
-      if (!orderId) {
-        throw new Error('No order ID received');
+      const { orderId, keyId, amount, currency } = data.data || {};
+
+      // Validate response data
+      if (!orderId || !orderId.trim()) {
+        console.error('Invalid orderId:', orderId);
+        throw new Error('Invalid order ID received from server');
+      }
+      if (!keyId || !keyId.trim()) {
+        console.error('Invalid keyId:', keyId);
+        throw new Error('Razorpay configuration error');
+      }
+      if (!amount || amount <= 0) {
+        console.error('Invalid amount:', amount);
+        throw new Error('Invalid amount received from server');
       }
 
+      // Show success toast
+      toast({
+        title: 'Payment Initiated',
+        description: 'Opening secure payment gateway...',
+      });
+
       const options = {
-        key: razorpaySettings.keyId,
-        amount: total * 100,
-        currency: razorpaySettings.currency || 'INR',
+        key: keyId.trim(),
+        amount: amount,
+        currency: currency || 'INR',
         name: 'UNI10',
         description: `Order for ₹${total}`,
-        order_id: orderId,
+        order_id: orderId.trim(),
         handler: async (response: any) => {
           try {
-            // Validate customer details
-            if (!customerDetails.name || !customerDetails.phone || !customerDetails.address || !customerDetails.city || !customerDetails.state || !customerDetails.pincode) {
-              throw new Error('Please fill in all customer details');
+            if (!response.razorpay_order_id || !response.razorpay_payment_id || !response.razorpay_signature) {
+              throw new Error('Invalid payment response from Razorpay');
             }
 
             const verifyResponse = await fetch('/api/payment/verify', {
@@ -215,7 +238,8 @@ const CheckoutPayment = () => {
                 description: 'Your order has been placed successfully.',
               });
               clearCart();
-              navigate('/dashboard');
+              const orderIdFromResponse = verifyData.data?.order?._id || orderId;
+              navigate(`/order-success?orderId=${orderIdFromResponse}`);
             } else {
               throw new Error(verifyData.message || 'Payment verification failed');
             }
@@ -229,12 +253,23 @@ const CheckoutPayment = () => {
             setSubmitting(false);
           }
         },
+        modal: {
+          ondismiss: () => {
+            toast({
+              title: 'Payment Cancelled',
+              description: 'You cancelled the payment. Please try again.',
+              variant: 'destructive',
+            });
+            setSubmitting(false);
+          },
+        },
         prefill: {
-          name: localStorage.getItem('userName') || '',
+          name: customerDetails.name,
           email: localStorage.getItem('userEmail') || '',
+          contact: customerDetails.phone,
         },
         theme: {
-          color: '#3399cc',
+          color: '#EF4444',
         },
       };
 
