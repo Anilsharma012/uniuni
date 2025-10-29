@@ -361,7 +361,7 @@ const CheckoutPayment = () => {
         }),
       });
 
-      const data = await response.json();
+      const data = await safeParseResponse<any>(response);
 
       if (response.ok && data.ok) {
         toast({
