@@ -51,7 +51,7 @@ router.post('/create-order', authOptional, async (req, res) => {
       console.error('Razorpay configuration error:', credError.message);
       return res.status(500).json({
         ok: false,
-        message: 'Razorpay is not properly configured on the server',
+        message: 'Razorpay keys not configured.',
       });
     }
 
