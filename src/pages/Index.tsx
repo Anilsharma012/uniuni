@@ -404,32 +404,32 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <p className="text-sm tracking-[0.3em] text-primary mb-4 uppercase font-medium">
+        <div className="relative z-10 text-center px-3 sm:px-4 max-w-4xl mx-auto">
+          <p className="text-xs sm:text-sm tracking-[0.3em] text-primary mb-2 sm:mb-4 uppercase font-medium">
             Welcome to the Universe
           </p>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-3 sm:mb-6 leading-tight">
             DEFINE YOUR
             <br />
             <span className="text-primary">UNIVERSE With Uni10</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto">
             Explore our exclusive collection of premium streetwear and lifestyle products
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/shop">
-              <Button size="lg" className="group">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+            <Link to="/shop" className="w-full sm:w-auto">
+              <Button size="lg" className="group w-full sm:w-auto">
                 Shop Now
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Link to="/shop/new-arrivals">
-              <Button size="lg" variant="outline">
+            <Link to="/shop/new-arrivals" className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto">
                 New Arrivals
               </Button>
             </Link>
           </div>
-          <NewsTicker className="mt-4" />
+          <NewsTicker className="mt-3 sm:mt-4" />
         </div>
       </section>
 
