@@ -96,7 +96,7 @@ router.post('/create-order', authOptional, async (req, res) => {
       console.error('Razorpay Key ID not available');
       return res.status(500).json({
         ok: false,
-        message: 'Payment gateway configuration incomplete',
+        message: 'Razorpay keys not configured.',
       });
     }
 
