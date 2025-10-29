@@ -190,7 +190,7 @@ const CheckoutPayment = () => {
         }),
       });
 
-      const data = await response.json();
+      const data = await safeParseResponse<any>(response);
 
       if (!response.ok || !data.ok) {
         throw new Error(data.message || 'Failed to create order');
