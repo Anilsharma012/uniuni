@@ -174,14 +174,24 @@ const CheckoutPayment = () => {
         });
       }
 
-      // Create order on backend
-      const response = await fetch('/api/payment/create-order', {
+      // Enforce HTTPS for secure providers (Builder preview requires https for Razorpay)
+      try {
+        if (typeof window !== 'undefined') {
+          const host = window.location.hostname || '';
+          if ((host.includes('builder') || host.includes('preview') || host.includes('builder.codes') || host.includes('builder.my')) && window.location.protocol !== 'https:') {
+            // Redirect to https
+            window.location.href = window.location.href.replace(/^http:/, 'https:');
+            return;
+          }
+        }
+      } catch (e) {}
+
+      // Show creating order loader toast
+      toast({ title: 'Creating order...', description: 'Please wait while we prepare the payment.' });
+
+      // Create order on backend using api helper which respects API_BASE
+      const { ok, json } = await api('/api/payment/create-order', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-        },
-        credentials: 'include',
         body: JSON.stringify({
           amount: total,
           currency: 'INR',
@@ -190,13 +200,14 @@ const CheckoutPayment = () => {
         }),
       });
 
-      const data = await safeParseResponse<any>(response);
-
-      if (!response.ok || !data.ok) {
-        throw new Error(data.message || 'Failed to create order');
+      if (!ok || !json || !json.ok) {
+        // Server issue
+        toast({ title: 'Server issue. Please try again later.', description: json?.message || 'Failed to create order', variant: 'destructive' });
+        setSubmitting(false);
+        return;
       }
 
-      const { orderId, keyId, amount, currency } = data.data || {};
+      const { orderId, keyId, amount, currency } = json.data || {};
 
       // Validate response data and alert on failure
       if (!orderId || typeof orderId !== 'string' || !orderId.trim() || !keyId || typeof keyId !== 'string' || !keyId.trim() || !amount || Number(amount) <= 0) {
@@ -282,13 +293,8 @@ const CheckoutPayment = () => {
     try {
       setSubmitting(true);
 
-      const response = await fetch('/api/payment/manual', {
+      const { ok, json } = await api('/api/payment/manual', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-        },
-        credentials: 'include',
         body: JSON.stringify({
           transactionId: upiTransactionId.trim(),
           amount: total,
@@ -304,9 +310,7 @@ const CheckoutPayment = () => {
         }),
       });
 
-      const data = await safeParseResponse<any>(response);
-
-      if (response.ok && data.ok) {
+      if (ok && json && json.ok) {
         toast({
           title: 'Payment Submitted!',
           description: 'Your payment proof has been submitted. We will verify it shortly.',
