@@ -863,8 +863,9 @@ const Admin = () => {
   const fetchBillingInfo = async () => {
     try {
       setBillingLoading(true);
-      const data = await apiFetch<BillingInfoForm>(`/api/admin/billing-info?v=${Date.now()}`);
-      if (data) {
+      const res = await api(`/api/admin/billing-info?v=${Date.now()}`);
+      if (res.ok && res.json && res.json.data) {
+        const data = res.json.data;
         setBillingForm({
           companyName: String(data.companyName || 'UNI10'),
           address: String(data.address || ''),
@@ -872,9 +873,24 @@ const Admin = () => {
           email: String(data.email || ''),
           gstinNumber: String(data.gstinNumber || ''),
         });
+      } else {
+        setBillingForm({
+          companyName: 'UNI10',
+          address: '',
+          contactNumber: '',
+          email: '',
+          gstinNumber: '',
+        });
       }
     } catch (e:any) {
       console.warn('Failed to load billing info', e?.message || e);
+      setBillingForm({
+        companyName: 'UNI10',
+        address: '',
+        contactNumber: '',
+        email: '',
+        gstinNumber: '',
+      });
     } finally {
       setBillingLoading(false);
     }
