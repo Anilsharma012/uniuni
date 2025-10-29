@@ -218,65 +218,14 @@ const CheckoutPayment = () => {
         name: 'UNI10',
         description: `Order for ₹${total}`,
         order_id: orderId.trim(),
-        handler: async (response: any) => {
-          try {
-            if (!response.razorpay_order_id || !response.razorpay_payment_id || !response.razorpay_signature) {
-              throw new Error('Invalid payment response from Razorpay');
-            }
-
-            const verifyResponse = await fetch('/api/payment/verify', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-              },
-              credentials: 'include',
-              body: JSON.stringify({
-                razorpayOrderId: response.razorpay_order_id,
-                razorpayPaymentId: response.razorpay_payment_id,
-                razorpaySignature: response.razorpay_signature,
-                items: items.map(i => ({ id: i.id, title: i.title, price: i.price, qty: i.qty, image: i.image, size: i.meta?.size, productId: i.id })),
-                appliedCoupon,
-                total,
-                name: customerDetails.name,
-                phone: customerDetails.phone,
-                address: customerDetails.address,
-                city: customerDetails.city,
-                state: customerDetails.state,
-                pincode: customerDetails.pincode,
-              }),
-            });
-
-            const verifyData = await safeParseResponse<any>(verifyResponse);
-
-            if (verifyResponse.ok && verifyData.ok) {
-              toast({
-                title: 'Payment Successful!',
-                description: 'Your order has been placed successfully.',
-              });
-              clearCart();
-              const orderIdFromResponse = verifyData.data?.order?._id || orderId;
-              navigate(`/order-success?orderId=${orderIdFromResponse}`);
-            } else {
-              throw new Error(verifyData.message || 'Payment verification failed');
-            }
-          } catch (error: any) {
-            toast({
-              title: 'Payment Verification Failed',
-              description: error?.message || 'An error occurred during verification',
-              variant: 'destructive',
-            });
-          } finally {
-            setSubmitting(false);
-          }
+        handler: (response: any) => {
+          // On successful payment, alert and redirect to order success with server orderId
+          alert('Payment Successful!');
+          window.location.href = `/order-success?orderId=${orderId}`;
         },
         modal: {
           ondismiss: () => {
-            toast({
-              title: 'Payment Cancelled',
-              description: 'You cancelled the payment. Please try again.',
-              variant: 'destructive',
-            });
+            console.warn('Payment cancelled by user.');
             setSubmitting(false);
           },
         },
