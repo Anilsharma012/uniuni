@@ -496,4 +496,91 @@ router.delete('/pages/:id', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
+// Billing Info endpoints
+const BillingInfo = require('../models/BillingInfo');
+
+// GET /api/admin/billing-info - Get company billing info
+router.get('/billing-info', async (req, res) => {
+  try {
+    let billingInfo = await BillingInfo.findOne();
+    if (!billingInfo) {
+      billingInfo = await BillingInfo.create({
+        companyName: 'UNI10',
+        address: '',
+        contactNumber: '',
+        email: '',
+        gstinNumber: '',
+      });
+    }
+    return res.json({ ok: true, data: billingInfo });
+  } catch (e) {
+    console.error('Failed to fetch billing info:', e);
+    return res.status(500).json({ ok: false, message: 'Server error' });
+  }
+});
+
+// POST /api/admin/billing-info - Create or update company billing info
+router.post('/billing-info', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { companyName, address, contactNumber, email, gstinNumber } = req.body || {};
+
+    if (!companyName || !address || !contactNumber || !email || !gstinNumber) {
+      return res.status(400).json({ ok: false, message: 'All fields are required' });
+    }
+
+    let billingInfo = await BillingInfo.findOne();
+    if (!billingInfo) {
+      billingInfo = await BillingInfo.create({
+        companyName: String(companyName).trim(),
+        address: String(address).trim(),
+        contactNumber: String(contactNumber).trim(),
+        email: String(email).trim(),
+        gstinNumber: String(gstinNumber).trim(),
+      });
+    } else {
+      billingInfo.companyName = String(companyName).trim();
+      billingInfo.address = String(address).trim();
+      billingInfo.contactNumber = String(contactNumber).trim();
+      billingInfo.email = String(email).trim();
+      billingInfo.gstinNumber = String(gstinNumber).trim();
+      await billingInfo.save();
+    }
+
+    return res.json({ ok: true, data: billingInfo });
+  } catch (e) {
+    console.error('Failed to save billing info:', e);
+    return res.status(500).json({ ok: false, message: 'Server error' });
+  }
+});
+
+// PATCH /api/admin/billing-info - Update company billing info
+router.patch('/billing-info', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { companyName, address, contactNumber, email, gstinNumber } = req.body || {};
+
+    let billingInfo = await BillingInfo.findOne();
+    if (!billingInfo) {
+      billingInfo = await BillingInfo.create({
+        companyName: companyName || 'UNI10',
+        address: address || '',
+        contactNumber: contactNumber || '',
+        email: email || '',
+        gstinNumber: gstinNumber || '',
+      });
+    } else {
+      if (companyName !== undefined) billingInfo.companyName = String(companyName).trim();
+      if (address !== undefined) billingInfo.address = String(address).trim();
+      if (contactNumber !== undefined) billingInfo.contactNumber = String(contactNumber).trim();
+      if (email !== undefined) billingInfo.email = String(email).trim();
+      if (gstinNumber !== undefined) billingInfo.gstinNumber = String(gstinNumber).trim();
+      await billingInfo.save();
+    }
+
+    return res.json({ ok: true, data: billingInfo });
+  } catch (e) {
+    console.error('Failed to update billing info:', e);
+    return res.status(500).json({ ok: false, message: 'Server error' });
+  }
+});
+
 module.exports = router;
