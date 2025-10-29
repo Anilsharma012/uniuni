@@ -247,8 +247,9 @@ const CheckoutPayment = () => {
       const rzp = new razorpayWindow(options);
       rzp.open();
     } catch (error: any) {
+      // Show red toast if server unreachable or other errors
       toast({
-        title: 'Payment Error',
+        title: 'Server not reachable. Try again later.',
         description: error?.message || 'Failed to initiate payment',
         variant: 'destructive',
       });
