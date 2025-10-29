@@ -10,6 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import { Menu, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function AccountProfile() {
   const { user, loading, signOut } = useAuth();
