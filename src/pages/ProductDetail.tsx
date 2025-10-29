@@ -429,14 +429,14 @@ const ProductDetail = () => {
             </div>
 
  
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {outOfStock || (product?.trackInventoryBySize && !selectedSize) ? (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="w-full">
-                        <Button size="lg" className="w-full" disabled>
-                          <ShoppingCart className="mr-2 h-5 w-5" />
+                      <span className="w-full block">
+                        <Button size="lg" className="w-full text-xs sm:text-sm h-9 sm:h-11" disabled>
+                          <ShoppingCart className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                           Add to Cart
                         </Button>
                       </span>
@@ -447,13 +447,13 @@ const ProductDetail = () => {
                   </Tooltip>
                 </TooltipProvider>
               ) : (
-                <Button size="lg" className="w-full" onClick={handleAddToCart}>
-                  <ShoppingCart className="mr-2 h-5 w-5" />
+                <Button size="lg" className="w-full text-xs sm:text-sm h-9 sm:h-11" onClick={handleAddToCart}>
+                  <ShoppingCart className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Add to Cart
                 </Button>
               )}
               {!(outOfStock || (product?.trackInventoryBySize && !selectedSize)) && (
-                <Button size="lg" className="w-full" onClick={handleBuyNow}>
+                <Button size="lg" className="w-full text-xs sm:text-sm h-9 sm:h-11" onClick={handleBuyNow}>
                   Buy Now
                 </Button>
               )}
@@ -461,7 +461,7 @@ const ProductDetail = () => {
                 <Button
                   size="lg"
                   variant={isVerifiedBuyer ? 'secondary' : 'outline'}
-                  className="w-full"
+                  className="w-full text-xs sm:text-sm h-9 sm:h-11"
                   onClick={() => setShowReviewModal(true)}
                   disabled={!isVerifiedBuyer}
                 >
@@ -471,8 +471,8 @@ const ProductDetail = () => {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="w-full">
-                        <Button size="lg" variant="outline" className="w-full" disabled>
+                      <span className="w-full block">
+                        <Button size="lg" variant="outline" className="w-full text-xs sm:text-sm h-9 sm:h-11" disabled>
                           Write a Review
                         </Button>
                       </span>
