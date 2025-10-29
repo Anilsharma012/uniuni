@@ -36,6 +36,16 @@ router.post('/create-order', authOptional, async (req, res) => {
       return res.status(400).json({ ok: false, message: 'No items in order' });
     }
 
+    const SiteSetting = require('../models/SiteSetting');
+    const settings = await SiteSetting.findOne();
+
+    if (!settings?.razorpay?.keyId || !settings?.razorpay?.keySecret) {
+      return res.status(500).json({
+        ok: false,
+        message: 'Razorpay is not configured. Please contact support.',
+      });
+    }
+
     const rzp = await getRazorpayInstance();
 
     const razorpayOrder = await rzp.orders.create({
@@ -52,6 +62,9 @@ router.post('/create-order', authOptional, async (req, res) => {
       ok: true,
       data: {
         orderId: razorpayOrder.id,
+        amount: Math.round(amount),
+        currency: currency || 'INR',
+        keyId: settings.razorpay.keyId,
       },
     });
   } catch (error) {
