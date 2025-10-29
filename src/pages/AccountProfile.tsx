@@ -21,6 +21,7 @@ export default function AccountProfile() {
   const [form, setForm] = useState<any>({ name: "", email: "", phone: "", address1: "", address2: "", city: "", state: "", pincode: "" });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string>("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const changed = useMemo(() => {
     if (!initial) return {} as any;
     const diff: any = {};
