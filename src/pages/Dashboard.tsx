@@ -312,10 +312,10 @@ export default function Dashboard() {
 
           <section className="flex-1 min-w-0 space-y-6 sm:space-y-8">
             {activeTab === "orders" && (
-              <section className="mb-12">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold">Your Orders</h2>
-                  <div className="flex items-center gap-2">
+              <section className="mb-8 sm:mb-12">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+                  <h2 className="text-lg sm:text-xl font-bold">Your Orders</h2>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
                     <button
                       className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
                       onClick={() => {
@@ -337,7 +337,7 @@ export default function Dashboard() {
                         setFilter(e.target.value as any);
                         setShowCount(10);
                       }}
-                      className="border border-border rounded px-2 py-1 text-sm bg-background"
+                      className="border border-border rounded px-2 py-1 text-xs sm:text-sm bg-background w-full sm:w-auto"
                     >
                       {statuses.map((s) => (
                         <option key={s} value={s}>
