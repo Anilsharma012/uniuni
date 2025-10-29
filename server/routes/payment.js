@@ -32,6 +32,17 @@ router.post('/create-order', authOptional, async (req, res) => {
   try {
     const { amount, currency, items, appliedCoupon } = req.body || {};
 
+    // Explicitly check SiteSetting for Razorpay config if env vars are not set
+    try {
+      const SiteSetting = require('../models/SiteSetting');
+      const settings = await SiteSetting.findOne();
+      if (!process.env.RAZORPAY_KEY_ID && !(settings && settings.razorpay && settings.razorpay.keyId)) {
+        return res.status(500).json({ ok: false, message: 'Razorpay not configured' });
+      }
+    } catch (e) {
+      // If checking settings fails, continue and rely on getRazorpayInstance to validate
+    }
+
     // Validate amount (expect amount in rupees from frontend)
     const parsedAmount = parseFloat(amount);
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
