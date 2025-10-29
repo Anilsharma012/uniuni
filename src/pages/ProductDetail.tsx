@@ -298,16 +298,16 @@ const ProductDetail = () => {
 
             {/* Per-size inventory display */}
             {product?.trackInventoryBySize && Array.isArray(product?.sizeInventory) && product.sizeInventory.length > 0 && (
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <label className="block text-sm font-semibold">Size</label>
+              <div className="mb-4 sm:mb-6">
+                <div className="flex items-center justify-between mb-2 sm:mb-3 gap-2">
+                  <label className="block text-xs sm:text-sm font-semibold">Size</label>
                   {product.sizeChart ? (
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowSizeChartTable(true)}
-                      className="text-xs"
+                      className="text-xs h-auto p-1"
                     >
                       <Ruler className="h-3 w-3 mr-1" />
                       Size Chart
@@ -318,14 +318,14 @@ const ProductDetail = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowSizeChart(true)}
-                      className="text-xs"
+                      className="text-xs h-auto p-1"
                     >
                       <Ruler className="h-3 w-3 mr-1" />
                       Size Chart
                     </Button>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                   {product.sizeInventory.map((sizeItem) => {
                     const isOutOfStock = sizeItem.qty === 0;
                     const isLowStock = sizeItem.qty > 0 && sizeItem.qty <= 3;
@@ -339,7 +339,7 @@ const ProductDetail = () => {
                             setSizeStockError('');
                           }}
                           className={cn(
-                            'px-4 py-2 rounded border text-sm font-medium transition-colors',
+                            'px-3 sm:px-4 py-1.5 sm:py-2 rounded border text-xs sm:text-sm font-medium transition-colors',
                             isOutOfStock
                               ? 'opacity-50 cursor-not-allowed bg-muted border-border text-muted-foreground'
                               : selectedSize === sizeItem.code
