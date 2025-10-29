@@ -116,19 +116,20 @@ const Products = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container mx-auto px-4 pt-24 pb-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4">
+      <main className="container mx-auto px-3 sm:px-4 pt-24 pb-12">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-2xl sm:text-4xl md:text-6xl font-black tracking-tighter mb-2 sm:mb-4">
             All <span className="text-primary">Products</span>
           </h1>
         </div>
 
-        <div className="flex flex-wrap gap-2 justify-center mb-12">
+        <div className="flex flex-wrap gap-2 justify-center mb-8 sm:mb-12">
           {categories.map((category) => (
             <Button
               key={category}
               variant={selectedCategory === category ? 'default' : 'outline'}
               onClick={() => setSelectedCategory(category)}
+              className="text-xs sm:text-sm h-8 sm:h-10 px-2 sm:px-4"
             >
               {category}
             </Button>
@@ -136,9 +137,9 @@ const Products = () => {
         </div>
 
         {loading ? (
-          <div className="text-center py-12">Loading products...</div>
+          <div className="text-center py-12 text-sm sm:text-base">Loading products...</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
             {filteredProducts.map((product) => {
               const id = String(product._id || product.id || '');
               const title = product.title || product.name || '';
@@ -158,25 +159,25 @@ const Products = () => {
                     />
                     <button
                       onClick={() => addToWishlist(id)}
-                      className="absolute top-2 right-2 p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
+                      className="absolute top-2 right-2 p-2 bg-background/80 hover:bg-background rounded-full transition-colors"
                     >
-                      <Heart className="h-5 w-5" />
+                      <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
                     </button>
                   </div>
-                  <div className="p-4">
+                  <div className="p-3 sm:p-4">
                     <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                       {product.category}
                     </p>
-                    <h3 className="font-semibold mb-2">{title}</h3>
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                    <h3 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2 line-clamp-2">{title}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-2">
                       {product.description}
                     </p>
-                    <div className="flex items-center justify-between">
-                      <p className="text-lg font-bold">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm sm:text-lg font-bold">
                         ₹{Number(product.price || 0).toLocaleString('en-IN')}
                       </p>
-                      <Button size="icon" variant="secondary">
-                        <ShoppingCart className="h-4 w-4" />
+                      <Button size="icon" variant="secondary" className="h-8 w-8 sm:h-10 sm:w-10">
+                        <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">Stock: {Number(product.stock || 0)}</p>
