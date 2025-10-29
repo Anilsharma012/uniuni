@@ -198,18 +198,11 @@ const CheckoutPayment = () => {
 
       const { orderId, keyId, amount, currency } = data.data || {};
 
-      // Validate response data
-      if (!orderId || !orderId.trim()) {
-        console.error('Invalid orderId:', orderId);
-        throw new Error('Invalid order ID received from server');
-      }
-      if (!keyId || !keyId.trim()) {
-        console.error('Invalid keyId:', keyId);
-        throw new Error('Razorpay configuration error');
-      }
-      if (!amount || amount <= 0) {
-        console.error('Invalid amount:', amount);
-        throw new Error('Invalid amount received from server');
+      // Validate response data and alert on failure
+      if (!orderId || typeof orderId !== 'string' || !orderId.trim() || !keyId || typeof keyId !== 'string' || !keyId.trim() || !amount || Number(amount) <= 0) {
+        alert('Invalid order details. Please refresh and try again.');
+        setSubmitting(false);
+        return;
       }
 
       // Show success toast (green)
