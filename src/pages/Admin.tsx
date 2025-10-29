@@ -1643,126 +1643,158 @@ const handleProductSubmit = async (e: React.FormEvent) => {
   };
 
   const renderCoupons = () => (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Coupon Management</h2>
-          <p className="text-sm text-muted-foreground mt-1">Create and manage discount coupons</p>
-        </div>
-        <Dialog open={couponDialogOpen} onOpenChange={setCouponDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="rounded-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Coupon
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create New Coupon</DialogTitle>
-              <DialogDescription>Add a discount coupon for customers</DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="coupon-code">Coupon Code</Label>
-                <Input
-                  id="coupon-code"
-                  placeholder="e.g., SAVE10"
-                  value={couponForm.code}
-                  onChange={(e) => setCouponForm((p) => ({ ...p, code: e.target.value.toUpperCase() }))}
-                  disabled={couponSaving}
-                />
-              </div>
-              <div>
-                <Label htmlFor="coupon-discount">Discount (%)</Label>
-                <Input
-                  id="coupon-discount"
-                  type="number"
-                  min="1"
-                  max="100"
-                  value={couponForm.discount}
-                  onChange={(e) => setCouponForm((p) => ({ ...p, discount: Number(e.target.value) }))}
-                  disabled={couponSaving}
-                />
-              </div>
-              <div>
-                <Label htmlFor="coupon-expiry">Expiry Date</Label>
-                <Input
-                  id="coupon-expiry"
-                  type="date"
-                  value={couponForm.expiryDate}
-                  onChange={(e) => setCouponForm((p) => ({ ...p, expiryDate: e.target.value }))}
-                  disabled={couponSaving}
-                />
-              </div>
-              <div className="flex gap-2 justify-end">
-                <Button variant="outline" onClick={() => setCouponDialogOpen(false)} disabled={couponSaving}>
-                  Cancel
-                </Button>
-                <Button onClick={createCoupon} disabled={couponSaving}>
-                  {couponSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Create
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
 
-      <Card className="shadow-sm rounded-xl bg-white dark:bg-card">
-        <CardContent className="p-4">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Coupon Code</TableHead>
-                  <TableHead>Discount (%)</TableHead>
-                  <TableHead>Expiry Date</TableHead>
-                  <TableHead>Used By</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {couponsLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
-                      Loading...
-                    </TableCell>
-                  </TableRow>
-                ) : coupons.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
-                      No coupons created yet
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  coupons.map((coupon) => (
-                    <TableRow key={coupon.id} className="hover:bg-muted/50">
-                      <TableCell className="font-medium text-sm">{coupon.code}</TableCell>
-                      <TableCell className="text-sm">{coupon.discount}%</TableCell>
-                      <TableCell className="text-sm">
-                        {new Date(coupon.expiryDate).toLocaleDateString('en-IN')}
-                      </TableCell>
-                      <TableCell className="text-sm">{coupon.usedCount}</TableCell>
-                      <TableCell>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => deleteCoupon(coupon.id)}
-                          disabled={couponSaving}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+
+
+
+
+
+
+    <div className="space-y-6">
+  <div className="flex items-center justify-between">
+    <div>
+      <h2 className="text-2xl font-bold text-slate-500 dark:text-slate-200">Coupon Management</h2>
+      <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">Create and manage discount coupons</p>
     </div>
+
+    <Dialog open={couponDialogOpen} onOpenChange={setCouponDialogOpen}>
+      <DialogTrigger asChild>
+        <Button className="rounded-full">
+          <Plus className="h-4 w-4 mr-2" />
+          Create Coupon
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="text-slate-900 dark:text-slate-100">Create New Coupon</DialogTitle>
+          <DialogDescription className="text-slate-600 dark:text-slate-300">
+            Add a discount coupon for customers
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="coupon-code" className="text-slate-700 dark:text-slate-200">Coupon Code</Label>
+            <Input
+              id="coupon-code"
+              placeholder="e.g., SAVE10"
+              value={couponForm.code}
+              onChange={(e) =>
+                setCouponForm((p) => ({ ...p, code: e.target.value.toUpperCase() }))
+              }
+              disabled={couponSaving}
+              className="text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="coupon-discount" className="text-slate-700 dark:text-slate-200">Discount (%)</Label>
+            <Input
+              id="coupon-discount"
+              type="number"
+              min="1"
+              max="100"
+              value={couponForm.discount}
+              onChange={(e) => setCouponForm((p) => ({ ...p, discount: Number(e.target.value) }))}
+              disabled={couponSaving}
+              className="text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="coupon-expiry" className="text-slate-700 dark:text-slate-200">Expiry Date</Label>
+            <Input
+              id="coupon-expiry"
+              type="date"
+              value={couponForm.expiryDate}
+              onChange={(e) => setCouponForm((p) => ({ ...p, expiryDate: e.target.value }))}
+              disabled={couponSaving}
+              className="text-slate-900 dark:text-slate-100"
+            />
+          </div>
+
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" onClick={() => setCouponDialogOpen(false)} disabled={couponSaving}>
+              Cancel
+            </Button>
+            <Button onClick={createCoupon} disabled={couponSaving}>
+              {couponSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Create
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  </div>
+
+  <Card className="shadow-sm rounded-xl bg-white dark:bg-slate-900">
+    <CardContent className="p-4">
+      <div className="overflow-x-auto text-slate-800 dark:text-slate-200">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-slate-700 dark:text-slate-300">Coupon Code</TableHead>
+              <TableHead className="text-slate-700 dark:text-slate-300">Discount (%)</TableHead>
+              <TableHead className="text-slate-700 dark:text-slate-300">Expiry Date</TableHead>
+              <TableHead className="text-slate-700 dark:text-slate-300">Used By</TableHead>
+              <TableHead className="text-slate-700 dark:text-slate-300">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {couponsLoading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-6 text-slate-600 dark:text-slate-300">
+                  Loading...
+                </TableCell>
+              </TableRow>
+            ) : coupons.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-6 text-slate-600 dark:text-slate-300">
+                  No coupons created yet
+                </TableCell>
+              </TableRow>
+            ) : (
+              coupons.map((coupon) => (
+                <TableRow key={coupon.id} className="hover:bg-muted/50">
+                  <TableCell className="font-medium text-sm break-words">{coupon.code}</TableCell>
+                  <TableCell className="text-sm">{coupon.discount}%</TableCell>
+                  <TableCell className="text-sm">
+                    {new Date(coupon.expiryDate).toLocaleDateString("en-IN")}
+                  </TableCell>
+                  <TableCell className="text-sm">{coupon.usedCount}</TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => deleteCoupon(coupon.id)}
+                      disabled={couponSaving}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </CardContent>
+  </Card>
+</div>
+
+
+
+
+
+
+
   );
+
+
+
+
 
   if (authLoading) {
     return (
@@ -3335,85 +3367,145 @@ const handleProductSubmit = async (e: React.FormEvent) => {
     }
   };
 
-  const renderReviews = () => (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">User Reviews</h2>
-      </div>
-      <Card className="shadow-sm rounded-xl bg-[#f9fafb]">
-        <CardContent className="p-4">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Review</TableHead>
-                  <TableHead>Rating</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {reviews.map((r) => (
-                  <TableRow key={r._id} className="hover:bg-muted/50">
-                    <TableCell className="font-medium">{r.userId?.name || '-'}</TableCell>
-                    <TableCell className="text-muted-foreground">{r.userId?.email || '-'}</TableCell>
-                    <TableCell className="max-w-[360px]">
-                      <div className="text-sm whitespace-pre-wrap">{r.text}</div>
-                      {Array.isArray(r.replies) && r.replies.length > 0 && (
-                        <div className="mt-2 space-y-1">
-                          {r.replies.map((rep, i) => (
-                            <div key={i} className="text-xs text-muted-foreground border-l pl-2">
-                              <span className="font-medium">{rep.authorId?.name || 'Admin'}:</span> {rep.text}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </TableCell>
-                    <TableCell>{r.rating ?? '-'}</TableCell>
-                    <TableCell>{new Date(r.createdAt).toLocaleDateString('en-IN')}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button size="sm" variant="outline" onClick={() => openReply(r)}>Reply</Button>
-                        <Button size="sm" variant="destructive" onClick={() => deleteReview(r._id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {(!reviews || reviews.length === 0) && (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-6">
-                      {reviewsLoading ? 'Loading...' : 'No reviews found.'}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
 
-      <Dialog open={replyOpen} onOpenChange={setReplyOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Reply to Review</DialogTitle>
-            <DialogDescription>Send a response to the user. This will appear under their review.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-2">
-            <Label>Reply</Label>
-            <Textarea value={replyText} onChange={(e) => setReplyText(e.target.value)} placeholder="Write your reply..." className="min-h-[120px]" />
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setReplyOpen(false)}>Cancel</Button>
-            <Button onClick={sendReviewReply}>Send Reply</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+
+
+
+  const renderReviews = () => (
+
+
+
+
+
+
+   <div className="space-y-6">
+  <div>
+    <h2 className="text-2xl font-bold">User Reviews</h2>
+  </div>
+
+  <Card className="shadow-sm rounded-xl bg-white dark:bg-slate-900">
+    <CardContent className="p-4">
+      <div className="overflow-x-auto text-slate-800 dark:text-slate-200">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-slate-700 dark:text-slate-300">User Name</TableHead>
+              <TableHead className="text-slate-700 dark:text-slate-300">Email</TableHead>
+              <TableHead className="text-slate-700 dark:text-slate-300">Review</TableHead>
+              <TableHead className="text-slate-700 dark:text-slate-300">Rating</TableHead>
+              <TableHead className="text-slate-700 dark:text-slate-300">Date</TableHead>
+              <TableHead className="text-slate-700 dark:text-slate-300">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {reviews.map((r) => (
+              <TableRow key={r._id} className="hover:bg-muted/50">
+                <TableCell className="font-medium">{r.userId?.name || "-"}</TableCell>
+
+                {/* stronger color than 'muted' so it stays readable */}
+                <TableCell className="text-slate-600 dark:text-slate-300">
+                  {r.userId?.email || "-"}
+                </TableCell>
+
+                <TableCell className="max-w-[420px]">
+                  <div className="text-sm leading-relaxed break-words whitespace-pre-wrap">
+                    {r.text}
+                  </div>
+
+                  {Array.isArray(r.replies) && r.replies.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      {r.replies.map((rep, i) => (
+                        <div
+                          key={i}
+                          className="text-xs text-slate-600 dark:text-slate-300 border-l border-slate-200 dark:border-slate-700 pl-2"
+                        >
+                          <span className="font-semibold text-slate-700 dark:text-slate-200">
+                            {rep.authorId?.name || "Admin"}:
+                          </span>{" "}
+                          {rep.text}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </TableCell>
+
+                <TableCell>{r.rating ?? "-"}</TableCell>
+
+                <TableCell>
+                  {r?.createdAt ? new Date(r.createdAt).toLocaleDateString("en-IN") : "-"}
+                </TableCell>
+
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="outline" onClick={() => openReply(r)}>
+                      Reply
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => deleteReview(r._id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+
+            {(!reviews || reviews.length === 0) && (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="text-center text-sm text-slate-600 dark:text-slate-300 py-6"
+                >
+                  {reviewsLoading ? "Loading..." : "No reviews found."}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </CardContent>
+  </Card>
+
+  <Dialog open={replyOpen} onOpenChange={setReplyOpen}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Reply to Review</DialogTitle>
+        <DialogDescription className="text-slate-600 dark:text-slate-300">
+          Send a response to the user. This will appear under their review.
+        </DialogDescription>
+      </DialogHeader>
+
+      <div className="space-y-2">
+        <Label>Reply</Label>
+        <Textarea
+          value={replyText}
+          onChange={(e) => setReplyText(e.target.value)}
+          placeholder="Write your reply..."
+          className="min-h-[120px] text-slate-800 dark:text-slate-200"
+        />
+      </div>
+
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" onClick={() => setReplyOpen(false)}>
+          Cancel
+        </Button>
+        <Button onClick={sendReviewReply}>Send Reply</Button>
+      </div>
+    </DialogContent>
+  </Dialog>
+</div>
+
   );
+
+
+
+
+
+
+
+
+
+
+
 
   const renderNotifications = () => (
     <div className="space-y-6">
