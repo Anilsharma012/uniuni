@@ -365,6 +365,31 @@ const CheckoutPayment = () => {
     }
   };
 
+  // If this page was opened with startPayment=1 (for top-level flow from Builder iframe), auto-initiate payment
+  React.useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('startPayment') === '1') {
+          // remove the param to avoid loops
+          params.delete('startPayment');
+          const newUrl = window.location.pathname + (params.toString() ? `?${params.toString()}` : '');
+          window.history.replaceState({}, '', newUrl);
+          // Delay slightly to let the page render
+          setTimeout(() => {
+            (async () => {
+              try {
+                await handleRazorpayPayment();
+              } catch (e) {
+                console.error('Auto payment start failed', e);
+              }
+            })();
+          }, 600);
+        }
+      }
+    } catch (e) {}
+  }, []);
+
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-background">
