@@ -176,18 +176,33 @@ router.post('/verify', requireAuth, async (req, res) => {
 
     // If order details provided, create the order
     if (items && Array.isArray(items) && items.length > 0) {
-      if (!city || !state || !pincode) {
+      // Validate delivery details
+      if (!city || typeof city !== 'string' || !city.trim()) {
         return res.status(400).json({
           ok: false,
-          message: 'City, state, and pincode are required',
+          message: 'City is required',
         });
       }
 
-      const pinOk = /^\d{4,8}$/.test(String(pincode));
+      if (!state || typeof state !== 'string' || !state.trim()) {
+        return res.status(400).json({
+          ok: false,
+          message: 'State is required',
+        });
+      }
+
+      if (!pincode || typeof pincode !== 'string') {
+        return res.status(400).json({
+          ok: false,
+          message: 'Pincode is required',
+        });
+      }
+
+      const pinOk = /^\d{4,8}$/.test(String(pincode).trim());
       if (!pinOk) {
         return res.status(400).json({
           ok: false,
-          message: 'Invalid pincode',
+          message: 'Pincode must be between 4-8 digits',
         });
       }
 
