@@ -40,20 +40,13 @@ router.post('/create-order', authOptional, async (req, res) => {
       return res.status(400).json({ ok: false, message: 'No items in order' });
     }
 
-    const SiteSetting = require('../models/SiteSetting');
-    const settings = await SiteSetting.findOne();
-
-    if (!settings?.razorpay?.keyId || !settings?.razorpay?.keySecret) {
-      return res.status(500).json({
-        ok: false,
-        message: 'Razorpay is not configured. Please contact support.',
-      });
-    }
-
     const rzp = await getRazorpayInstance();
 
+    // Amount should be in paise (already multiplied by 100 from frontend)
+    const amountInPaise = Math.round(amount);
+
     const razorpayOrder = await rzp.orders.create({
-      amount: Math.round(amount),
+      amount: amountInPaise,
       currency: currency || 'INR',
       receipt: `order_${Date.now()}`,
       notes: {
@@ -62,13 +55,31 @@ router.post('/create-order', authOptional, async (req, res) => {
       },
     });
 
+    if (!razorpayOrder || !razorpayOrder.id) {
+      console.error('Invalid Razorpay order response:', razorpayOrder);
+      return res.status(500).json({
+        ok: false,
+        message: 'Failed to create Razorpay order',
+      });
+    }
+
+    // Use environment variables for keyId (with database as fallback)
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    if (!keyId) {
+      console.error('Razorpay Key ID not configured');
+      return res.status(500).json({
+        ok: false,
+        message: 'Razorpay is not properly configured on the server',
+      });
+    }
+
     return res.json({
       ok: true,
       data: {
         orderId: razorpayOrder.id,
-        amount: Math.round(amount),
-        currency: currency || 'INR',
-        keyId: settings.razorpay.keyId,
+        amount: amountInPaise,
+        currency: razorpayOrder.currency || 'INR',
+        keyId: keyId,
       },
     });
   } catch (error) {
