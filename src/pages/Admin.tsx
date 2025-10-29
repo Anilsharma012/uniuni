@@ -312,7 +312,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
         }
       }
 
-      console.warn('Admin apiFetch network issue — using demo fallback for:', path, (mainErr as any)?.message || mainErr);
+      console.warn('Admin apiFetch network issue �� using demo fallback for:', path, (mainErr as any)?.message || mainErr);
       const p = path.toLowerCase();
       if (p.includes('/api/auth/users')) {
         return [
@@ -3701,6 +3701,8 @@ const handleProductSubmit = async (e: React.FormEvent) => {
         return null;
       case 'contact':
         return renderContactSettings();
+      case 'billing':
+        return renderBillingSettings();
       case 'payment':
         return renderPaymentSettings();
       case 'razorpaySettings':
